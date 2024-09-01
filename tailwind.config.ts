@@ -11,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        graycale: {
+        grayscale: {
           50: "#ffffff",
           100: "#F7F7FA",
           200: "#E4E5F0",
@@ -25,7 +25,7 @@ const config: Config = {
           200: "#4CBFA4",
           300: "#32A68A",
         },
-        bred: {
+        red: {
           100: "#FBEDED",
           200: "#D14343",
         },
