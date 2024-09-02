@@ -1,6 +1,5 @@
 import QuizModal from "@/components/wiki/QuizModal";
 import { useEffect } from "react";
-import prfileImage from "../../../public/assets/image/photo_2021-06-15_00-50-22.jpg";
 import Image from "next/image";
 import useBadgeStore from "../../../store/Zustand/badgeStore";
 import LinkIcon from "../../../public/assets/Icons/LinkIcon.svg";
@@ -11,6 +10,17 @@ const WikiPage = () => {
   useEffect(() => {
     setBadgeURL(window.location.href);
   }, []);
+
+  const profileData = [
+    { label: "거주도시", value: "서울" },
+    { label: "MBTI", value: "INFJ" },
+    { label: "직업", value: "코드잇 콘텐츠 프로듀서" },
+    { label: "SNS 계정", value: "dlwleje-ofoij" },
+    { label: "생일", value: "1999-12-31" },
+    { label: "별명", value: "없음" },
+    { label: "혈액형", value: "A" },
+    { label: "국적", value: "대한민국" },
+  ];
 
   return (
     <>
@@ -47,28 +57,22 @@ const WikiPage = () => {
           <section className="mt-[3.1rem]">
             <div className="p-12 w-80 h-[42rem] bg-grayscale-50 drop-shadow-2xl ">
               <Image
-                src={prfileImage}
+                src={"#"}
                 alt="프로필 이미지"
                 className="mb-[3.7rem] w-[12.5rem] h-[12.5rem] m-auto rounded-full"
               />
 
-              <div className="grid grid-cols-2 gap-3">
-                <span>거주도시</span>
-                <span>{"서울"}</span>
-                <span>MBTI</span>
-                <span>{"INFJ"}</span>
-                <span>직업</span>
-                <span>{"코드잇 콘텐츠 프로듀서"}</span>
-                <span>SNS 계정</span>
-                <span>{"dlwleje-ofoij"}</span>
-                <span>생일</span>
-                <span>{"1999-12-31"}</span>
-                <span>별명</span>
-                <span>{"없음"}</span>
-                <span>혈액형</span>
-                <span>{"A"}</span>
-                <span>국적</span>
-                <span>{"대한민국"}</span>
+              <div className="grid gap-3">
+                {profileData.map((item, index) => (
+                  <div key={index} className="grid grid-cols-[80px_auto] ">
+                    <div className=" font-medium text-sm text-grayscale-400">
+                      {item.label}
+                    </div>
+                    <div className="font-normal text-sm text-grayscale-500">
+                      {item.value}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
