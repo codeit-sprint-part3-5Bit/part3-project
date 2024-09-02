@@ -1,10 +1,12 @@
 import QuizModal from "@/components/wiki/QuizModal";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import prfileImage from "../../../public/assets/image/photo_2021-06-15_00-50-22.jpg";
 import Image from "next/image";
+import useBadgeStore from "../../../store/Zustand/badgeStore";
+import LinkIcon from "../../../public/assets/Icons/LinkIcon.svg";
 
 const WikiPage = () => {
-  const [badgeURL, setBadgeURL] = useState("");
+  const { badgeURL, setBadgeURL } = useBadgeStore();
 
   useEffect(() => {
     setBadgeURL(window.location.href);
@@ -15,14 +17,15 @@ const WikiPage = () => {
       <header>
         <div>~~~~~~~~~~~~~~~~~~~~~~헤더 부분~~~~~~~~~~~~~~~~</div>
       </header>
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-[5.6rem]">
         <main className="flex gap-[7.5rem]">
           <article className="mt-[5.6rem]">
             <h1 className="text-5xl font-semibold mb-8">이지동</h1>
             <a
               href={badgeURL}
-              className="bg-green-100 text-green-200 font-normal text-xs px-2.5 py-0.5 rounded-xl"
+              className="bg-green-100 text-green-200 font-normal text-xs px-2.5 py-1.5 rounded-xl"
             >
+              <LinkIcon className="inline" />
               {badgeURL}
             </a>
             <div className="bg-grayscale-100 flex flex-col justify-center items-center w-[54rem] h-48 rounded-lg mt-[3.5rem]">

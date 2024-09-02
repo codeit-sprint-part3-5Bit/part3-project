@@ -1,3 +1,9 @@
+import WikiPage from "./wiki/[code]";
+
 export default function Home() {
-  return <></>;
+  return (
+    <>
+      <WikiPage />
+    </>
+  );
 }

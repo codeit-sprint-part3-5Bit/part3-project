@@ -7,7 +7,14 @@ interface ImageModalProps {
   onInsertImage: (url: string) => void;
 }
 
-const CustomButton = ({ onClick, disabled, children }) => (
+// 이부분 나중에 수정하면 바꾸기
+interface CustomButtonProps {
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}
+
+const CustomButton = ({ onClick, disabled, children }: CustomButtonProps) => (
   <button
     onClick={onClick}
     disabled={disabled}
