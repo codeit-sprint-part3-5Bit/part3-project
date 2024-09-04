@@ -6,6 +6,7 @@ import Lockicon from "../../../public/assets/icons/lockicon.svg";
 interface QuizModalProps {
   quizButtonText: string; //퀴즈 모달 버튼 내용
   buttonWidth: string; // 퀴즈 모달 버튼 너비
+  buttonHigth: string; // 퀴즈 모달 버튼 높이
   question: string; // 퀴즈 내용 api 연동 필요
   answer: string; // api 연동 필요함 -> 사용자가 응답한 대답으로 api 연동
 }
@@ -13,6 +14,7 @@ interface QuizModalProps {
 const QuizModal = ({
   quizButtonText,
   buttonWidth,
+  buttonHigth,
   question,
   answer,
 }: QuizModalProps) => {
@@ -44,7 +46,7 @@ const QuizModal = ({
     <>
       <Button
         onClick={() => setOpenModal(true)}
-        className={`${buttonWidth} bg-green-200`}
+        className={`${buttonWidth} ${buttonHigth} bg-green-200 font-semibold text-lg`}
       >
         {quizButtonText}
       </Button>
