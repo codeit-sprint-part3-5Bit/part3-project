@@ -77,7 +77,7 @@ const WikiPage = () => {
   return (
     <>
       <header>
-        <div>~~~~~~~~~~~~~~~~~~~~~~헤더 부분~~~~~~~~~~~~~~~~</div>
+        <div>~~~~~~~~~~~~~~~~~~~~~~헤더 부분~~~~~~~~~~~~~~~~~</div>
       </header>
       <div className="flex justify-center mt-[5.6rem]">
         <main className="flex w-[1260px] justify-between">
