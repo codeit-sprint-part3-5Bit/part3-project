@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 
+// Article 타입 정의
+type Article = {
+  id: number;
+  title: string;
+  author: string;
+  likes: number;
+  date: string;
+  image: string;
+};
+
 // Custom SearchBar Component
 function SearchBar({
   searchQuery,
@@ -31,7 +41,6 @@ function SearchBar({
   );
 }
 
-// Custom Dropdown Component
 function CustomDropdown({
   orderBy,
   setOrderBy,
@@ -109,12 +118,42 @@ function Pagination({
 // Main Home Component
 export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [bestArticles, setBestArticles] = useState<Article[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [orderBy, setOrderBy] = useState<"recent" | "like">("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
 
+  useEffect(() => {
+    axios
+      .get(
+        `https://wikied-api.vercel.app/7-7/articles?orderBy=like&page=1&pageSize=4`
+      )
+      .then((response) => {
+        const data = response.data;
+        if (data && Array.isArray(data.list)) {
+          setBestArticles(
+            data.list.map((item: any) => ({
+              id: item.id,
+              title: item.title,
+              author: item.writer.name,
+              likes: item.likeCount,
+              date: new Date(item.createdAt).toLocaleDateString(),
+              image: item.image,
+            }))
+          );
+        } else {
+          setBestArticles([]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setBestArticles([]);
+      });
+  }, []);
+
+  // Fetch paginated articles based on search query and sorting order
   useEffect(() => {
     axios
       .get(
@@ -187,9 +226,10 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Display Best Articles */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        {articles.length > 0 ? (
-          articles.slice(0, 4).map((article) => (
+        {bestArticles.length > 0 ? (
+          bestArticles.map((article) => (
             <div
               key={article.id}
               className="bg-white shadow-md rounded-md overflow-hidden cursor-pointer"
