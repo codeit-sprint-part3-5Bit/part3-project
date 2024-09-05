@@ -1,13 +1,13 @@
 import QuizModal from "@/components/wiki/QuizModal";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import LinkIcon from "../../../public/assets/Icons/LinkIcon.svg";
+import LinkIcon from "/public/assets/Icons/LinkIcon.svg";
 import { useRouter } from "next/router";
 import authAxiosInstance from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Profile } from "@/types/wiki";
 import Snackbar from "@/components/wiki/Snackbar";
-import CheckIcon from "../../../public/assets/Icons/CheckIcon.svg";
+import CheckIcon from "/public/assets/Icons/CheckIcon.svg";
 
 const fetchUserData = async (code: string): Promise<Profile> => {
   const response = await authAxiosInstance.get(`/profiles/${code}`);
