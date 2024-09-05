@@ -1,7 +1,7 @@
 import { Button, Modal } from "flowbite-react";
 import React, { useState } from "react";
-import Closeicon from "../../../public/assets/icons/closeicon.svg";
-import Lockicon from "../../../public/assets/icons/lockicon.svg";
+import Closeicon from "/public/assets/icons/closeicon.svg";
+import Lockicon from "/public/assets/icons/lockicon.svg";
 
 interface QuizModalProps {
   quizButtonText: string; //퀴즈 모달 버튼 내용
