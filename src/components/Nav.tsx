@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Logo from "../../public/assets/Image/Logo.svg";
+import Logo from "../../public/assets/image/Logo.svg";
 import Image from "next/image";
 import AlarmIcon from "../../public/assets/Icons/AlarmIcon_small.svg";
 import Profile from "../../public/assets/Icons/ProfileIcon.svg";
