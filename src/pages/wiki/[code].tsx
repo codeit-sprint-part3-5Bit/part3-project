@@ -55,6 +55,7 @@ export default function WikiPage() {
   } = useQuery<Profile>({
     queryKey: ["userData", code],
     queryFn: () => fetchUserData(code as string),
+    enabled: !!code,
   });
 
   if (isLoading) {
