@@ -1,20 +1,26 @@
 import { Modal } from "flowbite-react";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { FaCamera } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
+// ImageModalProps 인터페이스 정의
 interface ImageModalProps {
   onInsertImage: (url: string) => void;
 }
 
-// 이부분 나중에 수정하면 바꾸기
+// CustomButtonProps 인터페이스 정의
 interface CustomButtonProps {
   onClick: () => void;
   disabled?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const CustomButton = ({ onClick, disabled, children }: CustomButtonProps) => (
+// CustomButton 컴포넌트 정의
+const CustomButton = ({
+  onClick,
+  disabled = false,
+  children,
+}: CustomButtonProps) => (
   <button
     onClick={onClick}
     disabled={disabled}
@@ -28,6 +34,7 @@ const CustomButton = ({ onClick, disabled, children }: CustomButtonProps) => (
   </button>
 );
 
+// ImageModal 컴포넌트 정의
 export default function ImageModal({ onInsertImage }: ImageModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);

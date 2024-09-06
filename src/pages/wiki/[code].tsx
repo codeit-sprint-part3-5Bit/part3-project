@@ -9,6 +9,7 @@ import { Profile } from "@/types/wiki";
 import Snackbar from "@/components/wiki/Snackbar";
 import CheckIcon from "/public/assets/Icons/CheckIcon.svg";
 import defaultimage from "/public/assets/image/defaultImage.png";
+import clsx from "clsx";
 
 const fetchUserData = async (code: string): Promise<Profile> => {
   const response = await authAxiosInstance.get(`/profiles/${code}`);
@@ -57,7 +58,11 @@ const WikiPage = () => {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-4 border-gray-500 border-b-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   if (error) {
@@ -77,10 +82,7 @@ const WikiPage = () => {
 
   return (
     <>
-      <header>
-        <div>~~~~~~~~~~~~~~~~~~~~~~헤더 부분~~~~~~~~~~~~~~~~~</div>
-      </header>
-      <div className="flex justify-center mt-[5.6rem]">
+      <div className="flex justify-center mt-[4.8rem]">
         <main className="flex w-[1260px] justify-between">
           <article className="mt-[5.6rem] w-[52rem]">
             <div className="flex justify-between ">
@@ -117,11 +119,13 @@ const WikiPage = () => {
               isOpen={isSnackbarOpen}
               onClose={handleCloseSnackbar}
               duration={3000}
-              className={`fixed top-20 left-1/2 transform -translate-x-1/2 font-semibold text-sm bg-green-100 text-green-300 px-5 py-3 rounded-xl shadow-lg border border-green-200 transition-transform duration-300 ease-in-out ${
-                isSnackbarOpen
-                  ? "translate-y-5 opacity-100"
-                  : "translate-y-0 opacity-0"
-              }`}
+              className={clsx(
+                `fixed top-20 left-1/2 transform -translate-x-1/2 font-semibold text-sm bg-green-100 text-green-300 px-5 py-3 rounded-xl shadow-lg border border-green-200 transition-transform duration-300 ease-in-out`,
+                {
+                  "translate-y-5 opacity-100": isSnackbarOpen,
+                  "translate-y-0 opacity-0": !isSnackbarOpen,
+                }
+              )}
             />
             {!userData?.content ? (
               <div className="bg-grayscale-100 flex flex-col justify-center items-center w-[54rem] h-48 rounded-lg mt-[3.5rem]">

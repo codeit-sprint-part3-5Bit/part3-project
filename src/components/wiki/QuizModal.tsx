@@ -2,6 +2,7 @@ import { Button, Modal } from "flowbite-react";
 import React, { useState } from "react";
 import Closeicon from "/public/assets/Icons/closeicon.svg";
 import Lockicon from "/public/assets/Icons/lockicon.svg";
+import clsx from "clsx";
 
 interface QuizModalProps {
   quizButtonText: string; //퀴즈 모달 버튼 내용
@@ -75,10 +76,11 @@ const QuizModal = ({
                 type="text"
                 value={inputValue}
                 onChange={handleInputChange}
-                className={`focus:ring-green-100 border-none pl-5 w-full h-11 ${
-                  !error ? " bg-grayscale-100" : "bg-red-100"
-                } rounded-lg  placeholder:text-gray-400`}
                 placeholder="답안을 입력 해 주세요"
+                className={clsx(
+                  `focus:ring-green-100 border-none pl-5 w-full h-11 rounded-lg  placeholder:text-gray-400`,
+                  { "bg-grayscale-100": !error, "bg-red-100": error }
+                )}
               />
               {error && <p className="mt-2.5 text-red-200 text-xs">{error}</p>}
               <div className="flex justify-center mb-5 mt-10">
