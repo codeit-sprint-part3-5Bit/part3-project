@@ -20,7 +20,7 @@ const fetchUserData = async (code: string): Promise<Profile> => {
   }
 };
 
-const WikiPage = () => {
+export default function WikiPage() {
   const [badgeURL, setBadgeURL] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const router = useRouter();
@@ -55,6 +55,7 @@ const WikiPage = () => {
   } = useQuery<Profile>({
     queryKey: ["userData", code],
     queryFn: () => fetchUserData(code as string),
+    enabled: !!code,
   });
 
   if (isLoading) {
@@ -177,6 +178,4 @@ const WikiPage = () => {
       </div>
     </>
   );
-};
-
-export default WikiPage;
+}
