@@ -1,18 +1,21 @@
 import { Button, Modal } from "flowbite-react";
 import React, { useState } from "react";
-import Closeicon from "../../../public/assets/image/closeicon.svg";
-import Lockicon from "../../../public/assets/image/lockicon.svg";
+import Closeicon from "/public/assets/Icons/closeicon.svg";
+import Lockicon from "/public/assets/Icons/lockicon.svg";
+import clsx from "clsx";
 
 interface QuizModalProps {
   quizButtonText: string; //퀴즈 모달 버튼 내용
   buttonWidth: string; // 퀴즈 모달 버튼 너비
+  buttonHigth: string; // 퀴즈 모달 버튼 높이
   question: string; // 퀴즈 내용 api 연동 필요
   answer: string; // api 연동 필요함 -> 사용자가 응답한 대답으로 api 연동
 }
 
-const Component = ({
+const QuizModal = ({
   quizButtonText,
   buttonWidth,
+  buttonHigth,
   question,
   answer,
 }: QuizModalProps) => {
@@ -44,7 +47,7 @@ const Component = ({
     <>
       <Button
         onClick={() => setOpenModal(true)}
-        className={`${buttonWidth} bg-green-200`}
+        className={`${buttonWidth} ${buttonHigth} bg-green-200 font-semibold text-lg`}
       >
         {quizButtonText}
       </Button>
@@ -63,7 +66,7 @@ const Component = ({
               <Closeicon />
             </button>
             <Lockicon className="block mx-auto  mb-5" />
-            <div className="text-center text-sm text-graycale-400 mb-9 ">
+            <div className="text-center text-sm text-grayscale-400 mb-9 ">
               <p>다음 퀴즈를 맞추고</p>
               <p>위키를 작성해 보세요.</p>
             </div>
@@ -73,22 +76,23 @@ const Component = ({
                 type="text"
                 value={inputValue}
                 onChange={handleInputChange}
-                className={`focus:ring-green-100 border-none pl-5 w-full h-11 ${
-                  !error ? " bg-graycale-100" : "bg-bred-100"
-                } rounded-lg  placeholder:text-gray-400`}
                 placeholder="답안을 입력 해 주세요"
+                className={clsx(
+                  `focus:ring-green-100 border-none pl-5 w-full h-11 rounded-lg  placeholder:text-gray-400`,
+                  { "bg-grayscale-100": !error, "bg-red-100": error }
+                )}
               />
-              {error && <p className="mt-2.5 text-bred-200 text-xs">{error}</p>}
+              {error && <p className="mt-2.5 text-red-200 text-xs">{error}</p>}
               <div className="flex justify-center mb-5 mt-10">
                 <button
                   type="submit"
-                  className=" text-graycale-50  bg-green-200 w-full rounded-lg h-10 "
+                  className=" text-grayscale-50  bg-green-200 w-full rounded-lg h-10 "
                 >
                   확인
                 </button>
               </div>
             </form>
-            <div className="text-xs text-graycale-400 ">
+            <div className="text-xs text-grayscale-400 ">
               <p className="text-center">
                 위키드는 지인들과 함꼐하는 즐거운 공간입니다.
               </p>
@@ -103,4 +107,4 @@ const Component = ({
   );
 };
 
-export default Component;
+export default QuizModal;
