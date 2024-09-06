@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Profile } from "@/types/wiki";
 import Snackbar from "@/components/wiki/Snackbar";
 import CheckIcon from "/public/assets/Icons/CheckIcon.svg";
+import defaultimage from "/public/assets/image/defaultImage.png";
 
 const fetchUserData = async (code: string): Promise<Profile> => {
   const response = await authAxiosInstance.get(`/profiles/${code}`);
@@ -146,7 +147,7 @@ const WikiPage = () => {
           <section className="mt-[3.1rem]">
             <div className="p-12 w-80 h-[42rem] bg-grayscale-50 drop-shadow-2xl ">
               <Image
-                src={userData?.image || "/default-image.jpg"}
+                src={userData?.image || defaultimage}
                 alt="프로필 이미지"
                 className="mb-[3.7rem] w-[12.5rem] h-[12.5rem] m-auto rounded-full"
                 priority={true}
