@@ -1,27 +1,42 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 
 // Article 타입 정의
-type Article = {
+interface Article {
   id: number;
   title: string;
   author: string;
   likes: number;
   date: string;
   image: string;
-};
+}
 
-// Custom SearchBar Component
-function SearchBar({
-  searchQuery,
-  setSearchQuery,
-  handleSearch,
-}: {
+// API 응답 타입 정의
+interface ArticleResponse {
+  list: Array<{
+    id: number;
+    title: string;
+    writer: { name: string };
+    likeCount: number;
+    createdAt: string;
+    image: string;
+  }>;
+  totalCount: number;
+}
+
+// SearchBar props 타입 정의
+interface SearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   handleSearch: () => void;
-}) {
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  searchQuery,
+  setSearchQuery,
+  handleSearch,
+}) => {
   return (
     <div className="flex items-center space-x-4 flex-grow">
       <input
@@ -30,6 +45,11 @@ function SearchBar({
         placeholder="제목을 검색해 주세요"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            handleSearch();
+          }
+        }}
       />
       <button
         onClick={handleSearch}
@@ -39,15 +59,19 @@ function SearchBar({
       </button>
     </div>
   );
-}
+};
 
-function CustomDropdown({
-  orderBy,
-  setOrderBy,
-}: {
+// CustomDropdown props 타입 정의
+interface CustomDropdownProps {
   orderBy: "recent" | "like";
   setOrderBy: (order: "recent" | "like") => void;
-}) {
+}
+
+// Custom Dropdown Component
+const CustomDropdown: React.FC<CustomDropdownProps> = ({
+  orderBy,
+  setOrderBy,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -82,59 +106,134 @@ function CustomDropdown({
       )}
     </div>
   );
-}
+};
 
-// Custom Pagination Component
-function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: {
+// Pagination props 타입 정의
+interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-}) {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+}
+
+// Custom Pagination Component
+const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
+  const pageNumbers = [];
+  let startPage, endPage;
+  if (totalPages <= 5) {
+    startPage = 1;
+    endPage = totalPages;
+  } else {
+    if (currentPage <= 3) {
+      startPage = 1;
+      endPage = 5;
+    } else if (currentPage + 2 >= totalPages) {
+      startPage = totalPages - 4;
+      endPage = totalPages;
+    } else {
+      startPage = currentPage - 2;
+      endPage = currentPage + 2;
+    }
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
 
   return (
     <div className="flex justify-center mt-6 space-x-2">
-      {pages.map((page) => (
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`py-2 px-4 rounded-md ${
+          currentPage === 1
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+        }`}
+      >
+        &lt;
+      </button>
+      {pageNumbers.map((number) => (
         <button
-          key={page}
-          onClick={() => onPageChange(page)}
+          key={number}
+          onClick={() => onPageChange(number)}
           className={`py-2 px-4 rounded-md ${
-            page === currentPage
+            number === currentPage
               ? "bg-green-200 text-white"
               : "bg-gray-100 text-gray-500 hover:bg-gray-200"
           }`}
         >
-          {page}
+          {number}
         </button>
       ))}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`py-2 px-4 rounded-md ${
+          currentPage === totalPages
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+        }`}
+      >
+        &gt;
+      </button>
     </div>
   );
-}
+};
 
 // Main Home Component
-export default function Home() {
-  const [articles, setArticles] = useState<Article[]>([]);
+const Home: React.FC = () => {
+  const [allArticles, setAllArticles] = useState<Article[]>([]);
   const [bestArticles, setBestArticles] = useState<Article[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [orderBy, setOrderBy] = useState<"recent" | "like">("recent");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
 
+  const fetchArticles = useCallback(async () => {
+    try {
+      const response = await axios.get<ArticleResponse>(
+        `https://wikied-api.vercel.app/7-7/articles?pageSize=1000&orderBy=${orderBy}`
+      );
+      const data = response.data;
+      if (data && Array.isArray(data.list)) {
+        setAllArticles(
+          data.list.map((item) => ({
+            id: item.id,
+            title: item.title,
+            author: item.writer.name,
+            likes: item.likeCount,
+            date: new Date(item.createdAt).toLocaleDateString(),
+            image: item.image,
+          }))
+        );
+      } else {
+        setAllArticles([]);
+      }
+    } catch (error) {
+      console.error(error);
+      setAllArticles([]);
+    }
+  }, [orderBy]);
+
   useEffect(() => {
-    axios
-      .get(
-        `https://wikied-api.vercel.app/7-7/articles?orderBy=like&page=1&pageSize=4`
-      )
-      .then((response) => {
+    fetchArticles();
+  }, [fetchArticles]);
+
+  useEffect(() => {
+    const fetchBestArticles = async () => {
+      try {
+        const response = await axios.get<ArticleResponse>(
+          `https://wikied-api.vercel.app/7-7/articles?orderBy=like&page=1&pageSize=4`
+        );
         const data = response.data;
         if (data && Array.isArray(data.list)) {
           setBestArticles(
-            data.list.map((item: any) => ({
+            data.list.map((item) => ({
               id: item.id,
               title: item.title,
               author: item.writer.name,
@@ -146,73 +245,36 @@ export default function Home() {
         } else {
           setBestArticles([]);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
         setBestArticles([]);
-      });
+      }
+    };
+
+    fetchBestArticles();
   }, []);
 
-  // Fetch paginated articles based on search query and sorting order
-  useEffect(() => {
-    axios
-      .get(
-        `https://wikied-api.vercel.app/7-7/articles?page=${currentPage}&pageSize=10&orderBy=${orderBy}`
-      )
-      .then((response) => {
-        const data = response.data;
-        if (data && Array.isArray(data.list)) {
-          setArticles(
-            data.list.map((item: any) => ({
-              id: item.id,
-              title: item.title,
-              author: item.writer.name,
-              likes: item.likeCount,
-              date: new Date(item.createdAt).toLocaleDateString(),
-              image: item.image,
-            }))
-          );
-          setTotalPages(Math.ceil(data.totalCount / 5));
-        } else {
-          setArticles([]);
-          setTotalPages(1);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setArticles([]);
-        setTotalPages(1);
-      });
-  }, [orderBy, currentPage]);
+  const filteredArticles = useMemo(() => {
+    if (!activeSearchQuery) return allArticles;
+    return allArticles.filter((article) =>
+      article.title.toLowerCase().includes(activeSearchQuery.toLowerCase())
+    );
+  }, [allArticles, activeSearchQuery]);
 
-  const handleSearch = () => {
-    axios
-      .get(`https://wikied-api.vercel.app/7-7/articles?search=${searchQuery}`)
-      .then((response) => {
-        const data = response.data;
-        if (data && Array.isArray(data.list)) {
-          setArticles(
-            data.list.map((item: any) => ({
-              id: item.id,
-              title: item.title,
-              author: item.writer.name,
-              likes: item.likeCount,
-              date: new Date(item.createdAt).toLocaleDateString(),
-              image: item.image,
-            }))
-          );
-          setTotalPages(Math.ceil(data.totalCount / 5));
-        } else {
-          setArticles([]);
-          setTotalPages(1);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setArticles([]);
-        setTotalPages(1);
-      });
-  };
+  const paginatedArticles = useMemo(() => {
+    const startIndex = (currentPage - 1) * 10;
+    const endIndex = startIndex + 10;
+    return filteredArticles.slice(startIndex, endIndex);
+  }, [filteredArticles, currentPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredArticles.length / 10);
+  }, [filteredArticles]);
+
+  const handleSearch = useCallback(() => {
+    setActiveSearchQuery(searchQuery);
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   return (
     <div className="container mx-auto p-4">
@@ -270,11 +332,11 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {articles.length > 0 ? (
-            articles.map((article) => (
+          {paginatedArticles.length > 0 ? (
+            paginatedArticles.map((article) => (
               <tr
                 key={article.id}
-                className="hover:bg-gray-50 cursor-pointer"
+                className="hover:bg-gray-50 cursor-pointer h-[49px]"
                 onClick={() => router.push(`/articles/${article.id}`)}
               >
                 <td className="border border-gray-200 px-4 py-2 text-center">
@@ -295,7 +357,7 @@ export default function Home() {
               </tr>
             ))
           ) : (
-            <tr>
+            <tr className="h-[49px]">
               <td
                 colSpan={5}
                 className="border border-gray-200 px-4 py-2 text-center"
@@ -314,4 +376,6 @@ export default function Home() {
       />
     </div>
   );
-}
+};
+
+export default Home;
