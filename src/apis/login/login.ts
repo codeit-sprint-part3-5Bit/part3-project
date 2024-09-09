@@ -1,7 +1,6 @@
 import axios from "axios";
 import { LoginUserProps } from "@/types/login/types";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+import { BASE_URL } from "../base";
 
 export const postLogin = async ({ email, password }: LoginUserProps) => {
     const formData = new FormData();
