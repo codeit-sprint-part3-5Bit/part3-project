@@ -15,7 +15,6 @@ const Nav = () => {
         <Link href="#">자유게시판</Link>
       </div>
       <div className="flex items-center gap-10 mr-20">
-        {}
         <Link href="#">
           <AlarmIcon />
         </Link>
