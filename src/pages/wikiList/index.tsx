@@ -51,13 +51,17 @@ const WikiList = () => {
 
   return (
     <>
-      <SearchForm />
-      <ProfileList wikiItemList={data?.list || []} />
-      <Pagination
-        currentPage={Number(page)}
-        totalPages={data?.totalCount || 1}
-        onPageChange={handlePageChange}
-      />
+      <div className="flex flex-col justify-center items-center">
+        <SearchForm />
+        <ProfileList wikiItemList={data?.list || []} />
+        <Pagination
+          currentPage={Number(page)}
+          totalPages={data?.totalCount || 1}
+          onPageChange={handlePageChange}
+          previousLabel="<"
+          nextLabel=">"
+        />
+      </div>
     </>
   );
 };
