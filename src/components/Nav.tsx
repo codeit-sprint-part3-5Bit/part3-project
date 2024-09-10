@@ -16,11 +16,11 @@ const Nav = () => {
   return (
     <nav className="flex items-center justify-between h-16 shadow-md">
       <div className="flex items-center gap-10 ml-20 text-grayscale-500">
-        <Link href="#" className="whitespace-nowrap flex items-center gap-1">
+        <Link href="/" className="whitespace-nowrap flex items-center gap-1">
           <Logo />
           <span className="ml-2 font-open-sans text-grayscale-300">Wikied</span>
         </Link>
-        <Link href="#">위키목록</Link>
+        <Link href="/wikiList">위키목록</Link>
         <Link href="#">자유게시판</Link>
       </div>
       <div className="flex items-center gap-10 mr-20">
