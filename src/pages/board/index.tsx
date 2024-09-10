@@ -277,17 +277,16 @@ const Home: React.FC = () => {
   }, [searchQuery]);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">베스트 게시글</h1>
+    <div className="container mx-auto p-4 w-[1080px] mt-10 mb-24">
+      <div className="flex justify-between items-start mb-3">
+        <h1 className="text-2xl font-bold text-gray-700 mb-8">베스트 게시글</h1>
         <button
           onClick={() => router.push("/articles/create")}
-          className="bg-green-200 hover:bg-green-300 text-white py-2 px-4 rounded-md"
+          className="bg-green-200 hover:bg-green-300 text-white py-2 px-4 rounded-md w-[160px] h-[45px]"
         >
           게시물 등록하기
         </button>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         {bestArticles.length > 0 ? (
           bestArticles.map((article) => (
@@ -303,7 +302,15 @@ const Home: React.FC = () => {
               />
               <div className="p-4">
                 <h3 className="font-bold text-lg">{article.title}</h3>
-                <p className="text-gray-500">{article.author}</p>
+                <div className="flex justify-between items-center mt-2">
+                  <p className="text-gray-400">{article.author}</p>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">{article.date}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">❤ {article.likes}</span>
+                  </div>
+                </div>
               </div>
             </div>
           ))
@@ -311,8 +318,7 @@ const Home: React.FC = () => {
           <p>베스트 게시글이 없습니다.</p>
         )}
       </div>
-
-      <div className="flex space-x-4 mb-4">
+      <div className="flex space-x-4 mb-7 mt-20">
         <SearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -321,37 +327,41 @@ const Home: React.FC = () => {
         <CustomDropdown orderBy={orderBy} setOrderBy={setOrderBy} />
       </div>
 
-      <table className="w-full text-left table-auto border-collapse border border-gray-200">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-200 px-4 py-2">번호</th>
-            <th className="border border-gray-200 px-4 py-2">제목</th>
-            <th className="border border-gray-200 px-4 py-2">작성자</th>
-            <th className="border border-gray-200 px-4 py-2">좋아요</th>
-            <th className="border border-gray-200 px-4 py-2">날짜</th>
+      <table className="w-full text-left table-auto border-t border-gray-200 mt-8 mb-16">
+        <thead className="w-[1060px]">
+          <tr className="text-center h-[49px] text-gray-400">
+            <th className="border-b border-gray-200 px-4 py-2 w-[10%]">번호</th>
+            <th className="border-b border-gray-200 px-4 py-2 w-[35%]">제목</th>
+            <th className="border-b border-gray-200 px-4 py-2 w-[20%]">
+              작성자
+            </th>
+            <th className="border-b border-gray-200 px-4 py-2 w-[15%]">
+              좋아요
+            </th>
+            <th className="border-b border-gray-200 px-4 py-2 w-[20%]">날짜</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="w-[1060px]">
           {paginatedArticles.length > 0 ? (
             paginatedArticles.map((article) => (
               <tr
                 key={article.id}
-                className="hover:bg-gray-50 cursor-pointer h-[49px]"
+                className="hover:bg-gray-50 cursor-pointer h-[49px] text-gray-700"
                 onClick={() => router.push(`/articles/${article.id}`)}
               >
-                <td className="border border-gray-200 px-4 py-2 text-center">
+                <td className="border-b border-gray-200 px-4 py-2 text-center">
                   {article.id}
                 </td>
-                <td className="border border-gray-200 px-4 py-2">
-                  {article.title}
+                <td className="border-b border-gray-200 px-4 py-2 text-center">
+                  <span className="block truncate">{article.title}</span>
                 </td>
-                <td className="border border-gray-200 px-4 py-2 text-center">
+                <td className="border-b border-gray-200 px-4 py-2 text-center">
                   {article.author}
                 </td>
-                <td className="border border-gray-200 px-4 py-2 text-center">
+                <td className="border-b border-gray-200 px-4 py-2 text-center">
                   {article.likes}
                 </td>
-                <td className="border border-gray-200 px-4 py-2 text-center">
+                <td className="border-b border-gray-200 px-4 py-2 text-center">
                   {article.date}
                 </td>
               </tr>
@@ -360,7 +370,7 @@ const Home: React.FC = () => {
             <tr className="h-[49px]">
               <td
                 colSpan={5}
-                className="border border-gray-200 px-4 py-2 text-center"
+                className="border-b border-gray-200 px-4 py-2 text-center"
               >
                 게시글이 없습니다.
               </td>
@@ -368,7 +378,6 @@ const Home: React.FC = () => {
           )}
         </tbody>
       </table>
-
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
