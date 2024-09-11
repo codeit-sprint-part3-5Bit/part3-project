@@ -10,6 +10,7 @@ interface QuizModalProps {
   buttonHigth: string; // 퀴즈 모달 버튼 높이
   question: string; // 퀴즈 내용 api 연동 필요
   answer: string; // api 연동 필요함 -> 사용자가 응답한 대답으로 api 연동
+  onQuizSubmit: () => void; //조건부 렌더링 위한 임시 type
 }
 
 const QuizModal = ({
@@ -18,6 +19,7 @@ const QuizModal = ({
   buttonHigth,
   question,
   answer,
+  onQuizSubmit, //임시 type
 }: QuizModalProps) => {
   const [openModal, setOpenModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -39,7 +41,8 @@ const QuizModal = ({
     } else {
       setError("");
       handleClose();
-      setInputValue("");
+      // setInputValue("");
+      onQuizSubmit(); // 퀴즈 제출 후 콜백 호출, 임시
     }
   };
 

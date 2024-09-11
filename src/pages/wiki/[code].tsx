@@ -10,6 +10,8 @@ import Snackbar from "@/components/wiki/Snackbar";
 import CheckIcon from "/public/assets/Icons/CheckIcon.svg";
 import defaultimage from "/public/assets/image/defaultImage.png";
 import clsx from "clsx";
+import DOMPurify from "dompurify";
+import TextEditor from "@/components/wiki/textEditor";
 
 const fetchUserData = async (code: string): Promise<Profile> => {
   const response = await authAxiosInstance.get(`/profiles/${code}`);
@@ -23,6 +25,7 @@ const fetchUserData = async (code: string): Promise<Profile> => {
 export default function WikiPage() {
   const [badgeURL, setBadgeURL] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [isQuizSubmitted, setIsQuizSubmitted] = useState(false); // 퀴즈 제출 상태 추가 (임시)
   const router = useRouter();
   const { code } = router.query;
 
@@ -86,49 +89,62 @@ export default function WikiPage() {
       <div className="flex justify-center mt-[4.8rem]">
         <main className="flex w-[1260px] justify-between">
           <article className="mt-[5.6rem] w-[52rem]">
-            <div className="flex justify-between ">
-              <h1 className="text-5xl text-grayscale-500 font-semibold mb-8">
-                {userData?.nickname || "사용자 이름"}
-              </h1>
-              <div className="flex justify-end">
-                {userData?.content && (
-                  <QuizModal
-                    quizButtonText="위키 참여하기"
-                    buttonWidth="w-40"
-                    buttonHigth="h-11"
-                    question="안녕"
-                    answer="1"
-                  />
-                )}
-              </div>
-            </div>
-            <button
-              onClick={handleCopyBadgeURL}
-              className="bg-green-100 text-green-200 font-normal text-xs px-2.5 py-1.5 rounded-xl"
-            >
-              <LinkIcon className="inline" />
-              {badgeURL}
-            </button>
-            <Snackbar
-              message={
-                <>
-                  <div className="flex gap-2">
-                    <CheckIcon />내 위키 링크가 복사되었습니다.
+            {!isQuizSubmitted ? ( // 임시, 퀴즈가 제출되지 않은 경우 기존 내용 렌더링
+              <>
+                <div className="flex justify-between ">
+                  <h1 className="text-5xl text-grayscale-500 font-semibold mb-8">
+                    {userData?.nickname || "사용자 이름"}
+                  </h1>
+                  <div className="flex justify-end">
+                    {userData?.content && (
+                      <QuizModal
+                        quizButtonText="위키 참여하기"
+                        buttonWidth="w-40"
+                        buttonHigth="h-11"
+                        question="안녕"
+                        answer="1"
+                        onQuizSubmit={() => setIsQuizSubmitted(true)} // 퀴즈 제출 시 상태 변경
+                      />
+                    )}
                   </div>
-                </>
-              }
-              isOpen={isSnackbarOpen}
-              onClose={handleCloseSnackbar}
-              duration={3000}
-              className={clsx(
-                `fixed top-20 left-1/2 transform -translate-x-1/2 font-semibold text-sm bg-green-100 text-green-300 px-5 py-3 rounded-xl shadow-lg border border-green-200 transition-transform duration-300 ease-in-out`,
-                {
-                  "translate-y-5 opacity-100": isSnackbarOpen,
-                  "translate-y-0 opacity-0": !isSnackbarOpen,
-                }
-              )}
-            />
-            {!userData?.content ? (
+                </div>
+                <button
+                  onClick={handleCopyBadgeURL}
+                  className="bg-green-100 text-green-200 font-normal text-xs px-2.5 py-1.5 rounded-xl"
+                >
+                  <LinkIcon className="inline" />
+                  {badgeURL}
+                </button>
+                <Snackbar
+                  message={
+                    <div className="flex gap-2">
+                      <CheckIcon />내 위키 링크가 복사되었습니다.
+                    </div>
+                  }
+                  isOpen={isSnackbarOpen}
+                  onClose={handleCloseSnackbar}
+                  duration={3000}
+                  className={clsx(
+                    `fixed top-20 left-1/2 transform -translate-x-1/2 font-semibold text-sm bg-green-100 text-green-300 px-5 py-3 rounded-xl shadow-lg border border-green-200 transition-transform duration-300 ease-in-out`,
+                    {
+                      "translate-y-5 opacity-100": isSnackbarOpen,
+                      "translate-y-0 opacity-0": !isSnackbarOpen,
+                    }
+                  )}
+                />
+              </>
+            ) : (
+              userData && (
+                <TextEditor
+                  profile={userData} // userData가 정의된 경우에만 전달
+                  onEditorChange={() => {}}
+                  initialContent={userData.content} // 초기 콘텐츠
+                />
+              )
+              // <TextEditor profile={userData} /> // 퀴즈가 제출된 경우 에디터 렌더링
+            )}
+
+            {!userData?.content && !isQuizSubmitted && (
               <div className="bg-grayscale-100 flex flex-col justify-center items-center w-[54rem] h-48 rounded-lg mt-[3.5rem]">
                 <p className="text-grayscale-400 text-lg">
                   아직 작성된 내용이 없네요
@@ -142,10 +158,18 @@ export default function WikiPage() {
                   buttonHigth="h-10"
                   question="안녕"
                   answer="1"
+                  onQuizSubmit={() => setIsQuizSubmitted(true)} // 퀴즈 제출 시 상태 변경
                 />
               </div>
-            ) : (
-              <div className="mt-[3.5rem]">{userData?.content}</div>
+            )}
+
+            {userData?.content && !isQuizSubmitted && (
+              <div
+                className="mt-[3.5rem]"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(userData?.content),
+                }}
+              ></div>
             )}
           </article>
 
@@ -159,11 +183,10 @@ export default function WikiPage() {
                 width={200}
                 height={200}
               />
-
               <div className="grid gap-3">
                 {profileData.map((item, index) => (
                   <div key={index} className="grid grid-cols-[80px_auto] ">
-                    <div className=" font-medium text-sm text-grayscale-400">
+                    <div className="font-medium text-sm text-grayscale-400">
                       {item.label}
                     </div>
                     <div className="font-normal text-sm text-grayscale-500">
