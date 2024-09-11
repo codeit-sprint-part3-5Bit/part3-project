@@ -1,215 +1,316 @@
-import { useEffect, useState } from "react";
-import Bold from "/public/assets/Icons/BoldIcon.svg";
-import Italic from "/public/assets/Icons/ItalicIcon.svg";
-import UnderLineIcon from "/public/assets/Icons/UnderlineIcon.svg";
-import AlignIcon_left from "/public/assets/Icons/Alignment_left.svg";
-import AlignIcon_center from "/public/assets/Icons/AlignIcon_center.svg";
-import Alignment_right from "/public/assets/Icons/Alignment_right.svg";
-import BulletIcon from "/public/assets/Icons/BulletIcon.svg";
-import NumberIcon from "/public/assets/Icons/NumberIcon.svg";
-import Font from "/public/assets/Icons/Font.svg";
-import ImageIcon from "/public/assets/Icons/ImageIcon.svg";
-import LinkIcon from "/public/assets/Icons/LinkIcon.svg";
+import React, { useState, ReactNode } from "react";
+import { useEditor, EditorContent, Editor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import CharacterCount from "@tiptap/extension-character-count";
+import { Modal } from "flowbite-react";
+import { FaCamera } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 
-const ContentWriter = () => {
-  const [charCount, setCharCount] = useState(0);
-  const maxCharCount = 30;
-  const [fullCharCount, setFullCharCount] = useState(0);
-  const [nonSpaceCharCount, setNonSpaceCharCount] = useState(0);
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  List,
+  ListOrdered,
+  Image as ImageIcon,
+  Link as LinkIcon,
+} from "lucide-react";
 
-  const handleTitleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const currentCount = event.target.value.length;
-    if (currentCount <= maxCharCount) {
-      setCharCount(currentCount);
+interface ButtonProps {
+  onClick: () => void;
+  isActive?: boolean;
+  icon: React.ReactNode;
+  className?: string;
+}
+
+const Button: React.FC<ButtonProps> = ({
+  onClick,
+  isActive,
+  icon,
+  className = "",
+}) => (
+  <button
+    onClick={onClick}
+    className={`p-1 rounded hover:bg-gray-100 ${
+      isActive ? "bg-gray-200" : ""
+    } ${className}`}
+  >
+    {icon}
+  </button>
+);
+
+interface MenuBarProps {
+  editor: Editor | null;
+  onImageClick: () => void;
+  onLinkClick: () => void;
+}
+
+const MenuBar: React.FC<MenuBarProps> = ({
+  editor,
+  onImageClick,
+  onLinkClick,
+}) => {
+  if (!editor) {
+    return null;
+  }
+
+  return (
+    <div className="flex items-center space-x-2 mb-4 p-2 border rounded-full">
+      <Button
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        isActive={editor.isActive("bold")}
+        icon={<Bold size={16} />}
+      />
+      <Button
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        isActive={editor.isActive("italic")}
+        icon={<Italic size={16} />}
+      />
+      <Button
+        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        isActive={editor.isActive("underline")}
+        icon={<UnderlineIcon size={16} />}
+      />
+      <div className="border-r h-6 mx-2" />
+      <Button
+        onClick={() => editor.chain().focus().setTextAlign("left").run()}
+        isActive={editor.isActive({ textAlign: "left" })}
+        icon={<AlignLeft size={16} />}
+      />
+      <Button
+        onClick={() => editor.chain().focus().setTextAlign("center").run()}
+        isActive={editor.isActive({ textAlign: "center" })}
+        icon={<AlignCenter size={16} />}
+      />
+      <Button
+        onClick={() => editor.chain().focus().setTextAlign("right").run()}
+        isActive={editor.isActive({ textAlign: "right" })}
+        icon={<AlignRight size={16} />}
+      />
+      <div className="border-r h-6 mx-2" />
+      <Button
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        isActive={editor.isActive("bulletList")}
+        icon={<List size={16} />}
+      />
+      <Button
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        isActive={editor.isActive("orderedList")}
+        icon={<ListOrdered size={16} />}
+      />
+      <Button onClick={onImageClick} icon={<ImageIcon size={16} />} />
+      <div className="flex-grow" />
+      <Button
+        onClick={onLinkClick}
+        isActive={editor.isActive("link")}
+        icon={<LinkIcon size={16} />}
+        className="bg-gray-100 rounded-full p-1"
+      />
+    </div>
+  );
+};
+
+interface ImageModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onInsertImage: (url: string) => void;
+}
+
+const ImageModal: React.FC<ImageModalProps> = ({
+  isOpen,
+  onClose,
+  onInsertImage,
+}) => {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const charCountClass =
-    charCount >= maxCharCount ? "text-green-300" : "text-grayscale-500";
-
-  const handleEditorInputChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const inputValue = event.target.value;
-    setFullCharCount(inputValue.length);
-
-    const nonSpaceInput = inputValue.replace(/\s/g, "");
-    setNonSpaceCharCount(nonSpaceInput.length);
+  const handleInsert = () => {
+    if (imageUrl) {
+      onInsertImage(imageUrl);
+      onClose();
+      setImageUrl(null);
+    }
   };
 
   return (
-    <form>
-      <div className="shadow-md max-w-screen-lg px-8 pt-12 pb-8">
-        <div className="flex justify-between">
-          <h2 className="mb-6 text-2xl font-bold text-grayscale-500">
-            게시물 등록하기
-          </h2>
+    <Modal
+      show={isOpen}
+      onClose={onClose}
+      size="md"
+      position="center"
+      className="!fixed !inset-0"
+    >
+      <div className="relative flex flex-col items-center !max-h-none w-[100%] h-[360px] p-4 bg-white rounded-lg shadow-md">
+        <button
+          onClick={onClose}
+          className="absolute top-5 right-5 text-gray-500 hover:text-green-200"
+        >
+          <IoClose size={24} />
+        </button>
+
+        <div className="text-center font-bold text-lg w-full mb-4 mt-8">
+          <h2 className="text-graycale-500">이미지</h2>
+        </div>
+        <div
+          className="w-[100%] h-[160px] flex items-center justify-center bg-gray-100 rounded-[10px] cursor-pointer hover:bg-gray-200"
+          onClick={() => document.getElementById("imageInput")?.click()}
+        >
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="Selected"
+              className="max-h-full max-w-full rounded-[10px]"
+            />
+          ) : (
+            <FaCamera className="text-gray-400 text-4xl" />
+          )}
+          <input
+            id="imageInput"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </div>
+        <div className="w-full flex justify-end mt-8">
           <button
-            type="submit"
-            className="w-36 h-11 mt-0 text-grayscale-50 bg-grayscale-300 rounded-lg hover:bg-green-200"
+            onClick={handleInsert}
+            disabled={!imageUrl}
+            className={`px-4 py-2 rounded ${
+              !imageUrl
+                ? "bg-gray-300 cursor-not-allowed text-white select-none"
+                : "bg-gray-300 hover:bg-green-200 text-white select-none transition delay-50"
+            }`}
           >
-            등록하기
+            삽입하기
           </button>
         </div>
-        <div className="whitespace-nowrap text-gray-400 mb-8">
-          등록일 2024.02.24.
-        </div>
-        <hr />
-
-        <div className="flex items-center justify-between ">
-          <input
-            type="text"
-            className="flex items-center h-14 text-xl outline-none border-none w-3/5 p-0 text-grayscale-600 placeholder-gray-400 focus:outline-none"
-            placeholder="제목을 입력해주세요"
-            maxLength={maxCharCount}
-            onChange={handleTitleInputChange}
-            required
-          />
-          <div className="flex whitespace-nowrap">
-            <p className={charCountClass}>{charCount}/</p>
-            <p className="text-green-300">{maxCharCount}</p>
-          </div>
-        </div>
-        <hr />
-        <div className="text-grayscale-600 mt-5 mb-3 text-base">
-          공백포함 : 총 {fullCharCount}자 | 공백제외 : 총 {nonSpaceCharCount}자
-        </div>
-        <div className="w-full dark:bg-gray-700 dark:border-gray-600">
-          <div className="">
-            <label htmlFor="editor" className="sr-only">
-              Publish post
-            </label>
-            <textarea
-              id="editor"
-              rows={8}
-              className="block w-full px-0 text-xl p-0 text-grayscale-600 bg-white border-0 dark:bg-gray-800 placeholder:text-grayscale-300 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-              placeholder="본문을 입력해주세요"
-              required
-              onChange={handleEditorInputChange}
-            ></textarea>
-          </div>
-
-          <div className="shadow-sm h-11 flex items-center justify-between border-2 border-slate-50 rounded-3xl dark:border-gray-600 pl-4 pr-4 pt-2 pb-2">
-            <div className="flex gap-4 items-center justify-between dark:divide-gray-600">
-              <div className="gap-1 flex items-center justify-between">
-                <button
-                  type="button"
-                  className="rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <Bold aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </Bold>
-                  <span className="sr-only">Bold</span>
-                </button>
-                <button
-                  type="button"
-                  className="rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <Italic aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </Italic>
-                  <span className="sr-only">Italic</span>
-                </button>
-                <button
-                  type="button"
-                  className="rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <UnderLineIcon aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </UnderLineIcon>
-                  <span className="sr-only">UnderLineIcon</span>
-                </button>
-              </div>
-              <div className="gap-1 flex items-center justify-between">
-                <button
-                  type="button"
-                  className="text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <AlignIcon_left aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </AlignIcon_left>
-                  <span className="sr-only">AlignIcon_left</span>
-                </button>
-                <button
-                  type="button"
-                  className="text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <AlignIcon_center aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </AlignIcon_center>
-                  <span className="sr-only">AlignIcon_center</span>
-                </button>
-                <button
-                  type="button"
-                  className="text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <Alignment_right aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </Alignment_right>
-                  <span className="sr-only">Alignment_right</span>
-                </button>
-              </div>
-              <div className="gap-1 flex items-center justify-between">
-                <button
-                  type="button"
-                  className="rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <BulletIcon aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </BulletIcon>
-                  <span className="sr-only">BulletIcon</span>
-                </button>
-                <button
-                  type="button"
-                  className="rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <NumberIcon aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </NumberIcon>
-                  <span className="sr-only">NumberIcon</span>
-                </button>
-                <button
-                  type="button"
-                  className="rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <Font aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </Font>
-                  <span className="sr-only">Font</span>
-                </button>
-                <button
-                  type="button"
-                  className="rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                >
-                  <ImageIcon aria-hidden="true" fill="currentColor">
-                    <path d="M18 2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM2 18V7h6.7l.4-.409A4.309 4.309 0 0 1 15.753 7H18v11H2Z" />
-                    <path d="M8.139 10.411 5.289 13.3A1 1 0 0 0 5 14v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .7-.288l2.886-2.851-3.447-3.45ZM14 8a2.463 2.463 0 0 0-3.484 0l-.971.983 3.468 3.468.987-.971A2.463 2.463 0 0 0 14 8Z" />
-                  </ImageIcon>
-                  <span className="sr-only">ImageIcon</span>
-                </button>
-              </div>
-            </div>
-            <button
-              className="h-6 w-6 bg-slate-200 rounded-full flex items-center justify-center"
-              type="button"
-            >
-              <LinkIcon />
-            </button>
-          </div>
-        </div>
       </div>
-    </form>
+    </Modal>
+  );
+};
+
+interface CharacterCountState {
+  characters: number;
+  charactersWithoutSpaces: number;
+}
+
+const ContentWriter: React.FC = () => {
+  const [title, setTitle] = useState<string>("");
+  const [characterCount, setCharacterCount] = useState<CharacterCountState>({
+    characters: 0,
+    charactersWithoutSpaces: 0,
+  });
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Underline,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Image,
+      Link.configure({
+        openOnClick: false,
+      }),
+      CharacterCount.configure({
+        limit: 1000,
+      }),
+    ],
+    content: "",
+    onUpdate: ({ editor }) => {
+      const textContent = editor.getText();
+      const characters = textContent.length;
+      const charactersWithoutSpaces = textContent.replace(/\s+/g, "").length;
+
+      setCharacterCount({
+        characters,
+        charactersWithoutSpaces,
+      });
+    },
+  });
+
+  const handleImageInsert = (url: string) => {
+    editor?.chain().focus().setImage({ src: url }).run();
+  };
+
+  const handleLinkInsert = () => {
+    const url = window.prompt("Enter the URL");
+    if (url) {
+      editor?.chain().focus().setLink({ href: url }).run();
+    }
+  };
+
+  const formatDate = (date: Date): string => {
+    return date.toISOString().split("T")[0].replace(/-/g, ".");
+  };
+
+  return (
+    <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-700">게시물 등록하기</h1>
+        <button className="bg-green-200 text-white px-9 py-2 rounded-lg hover:bg-green-300 transition-colors">
+          등록하기
+        </button>
+      </div>
+
+      <p className="text-gray-500 mb-6">등록일 {formatDate(new Date())}</p>
+
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="제목을 입력해주세요"
+          className="w-full text-xl border-b border-gray-200 pb-2 focus:outline-none focus:border-blue-500"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          maxLength={30}
+        />
+        <p className="text-right text-sm text-green-500 mt-1">
+          {title.length}/30
+        </p>
+      </div>
+
+      <div className="mb-4">
+        <p className="text-sm text-gray-600">
+          공백포함 : 총 {characterCount.characters}자 | 공백제외 : 총{" "}
+          {characterCount.charactersWithoutSpaces}자
+        </p>
+      </div>
+
+      <EditorContent
+        editor={editor}
+        className="prose max-w-none min-h-[470px] border border-gray-200 mb-4"
+        style={{ overflow: "auto", maxHeight: "none" }}
+      />
+
+      <MenuBar
+        editor={editor}
+        onImageClick={() => setIsImageModalOpen(true)}
+        onLinkClick={handleLinkInsert}
+      />
+
+      <ImageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onInsertImage={handleImageInsert}
+      />
+    </div>
   );
 };
 
