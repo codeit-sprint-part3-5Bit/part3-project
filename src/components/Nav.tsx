@@ -4,14 +4,26 @@ import AlarmIcon from "/public/assets/Icons/AlarmIcon_small.svg";
 import Profile from "/public/assets/Icons/ProfileIcon.svg";
 import { useEffect, useState } from "react";
 import { Dropdown } from "flowbite-react";
+import { useRouter } from "next/router";
 
 const Nav = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setAccessToken(token);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    setAccessToken(null);
+    router.push("/login");
+  };
+
+  const handleMyWiki = () => {
+    router.push("/");
+  };
 
   return (
     <nav className="flex items-center justify-between h-16 shadow-md">
@@ -21,7 +33,7 @@ const Nav = () => {
           <span className="ml-2 font-open-sans text-grayscale-300">Wikied</span>
         </Link>
         <Link href="/wikiList">위키목록</Link>
-        <Link href="#">자유게시판</Link>
+        <Link href="/board">자유게시판</Link>
       </div>
       <div className="flex items-center gap-10 mr-20">
         {accessToken ? (
@@ -39,12 +51,12 @@ const Nav = () => {
               )}
             >
               <Dropdown.Item>계정 설정</Dropdown.Item>
-              <Dropdown.Item>내 위키</Dropdown.Item>
-              <Dropdown.Item>로그아웃</Dropdown.Item>
+              <Dropdown.Item onClick={handleMyWiki}>내 위키</Dropdown.Item>
+              <Dropdown.Item onClick={handleLogout}>로그아웃</Dropdown.Item>
             </Dropdown>
           </>
         ) : (
-          <Link href="#" className=" text-grayscale-500">
+          <Link href="/login" className=" text-grayscale-500">
             로그인
           </Link>
         )}
