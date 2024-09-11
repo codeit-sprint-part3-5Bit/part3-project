@@ -9,6 +9,11 @@ export interface ProfileSummary {
   id: number;
 }
 
+export interface ProfileDetail extends Profile {
+  isMyProfile?: boolean;
+  securityAnswer?: string;
+}
+
 export interface Profile {
   updatedAt: string;
   securityQuestion: string;
