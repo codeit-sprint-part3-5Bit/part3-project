@@ -1,24 +1,19 @@
-import axios from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useState } from "react";
 import SearchIcon from "../../../public/assets/Icons/searchicon.svg";
 
-const fetchData = async (searchValue: string) => {
-  if (!searchValue) return { totalCount: 0 };
-  const res = await axios.get(`/profiles?name=${searchValue}`);
-  return res.data;
-};
-
-const SearchForm = () => {
+const SearchForm = ({
+  data,
+  isLoading,
+  isError,
+}: {
+  data: { totalCount: number };
+  isLoading: boolean;
+  isError: boolean;
+}) => {
   const router = useRouter();
   const [value, setValue] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
-
-  const { data, isError, isLoading } = useQuery({
-    queryKey: ["profiles", searchValue],
-    queryFn: () => fetchData(searchValue),
-  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -27,8 +22,7 @@ const SearchForm = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     router.push(`/wikiList?name=${value}&page=1&pageSize=3`);
-    setSearchValue(`${value}`);
-    fetchData(value);
+    setSearchValue(value);
 
     if (!value) {
       router.push("/wikiList");
