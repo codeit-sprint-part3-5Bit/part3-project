@@ -3,11 +3,14 @@ import { LoginUserProps } from "@/types/login/types";
 import { BASE_URL } from "../base";
 
 export const postLogin = async ({ email, password }: LoginUserProps) => {
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('password', password);
-  
-    return axios.post(`${BASE_URL}/auth/signIn`, formData);
+    return axios.post(`${BASE_URL}/auth/signIn`, {
+        email,
+        password
+    }, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
 };
 
 export const postMemberRefresh = async (refreshToken: string) => {
@@ -21,4 +24,4 @@ export const postMemberRefresh = async (refreshToken: string) => {
       },
     );
     return response.data;
-  };
+};
