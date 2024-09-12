@@ -1,3 +1,9 @@
+import MainLanding from "@/components/mainpage/MainLanding";
+
 export default function Home() {
-  return <></>;
+  return (
+    <>
+      <MainLanding />
+    </>
+  );
 }
