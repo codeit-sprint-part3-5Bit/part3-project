@@ -11,7 +11,6 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClinet}>
       <Nav />
       <Component {...pageProps} />
-      <LoginForm />
-    </QueryClientProvider>
+      </QueryClientProvider>
   );
 }
