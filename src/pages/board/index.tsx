@@ -293,7 +293,7 @@ const Home: React.FC = () => {
             <div
               key={article.id}
               className="bg-white shadow-md rounded-md overflow-hidden cursor-pointer"
-              onClick={() => router.push(`/articles/${article.id}`)}
+              onClick={() => router.push(`/board/${article.id}`)}
             >
               <img
                 src={article.image}
@@ -347,7 +347,7 @@ const Home: React.FC = () => {
               <tr
                 key={article.id}
                 className="hover:bg-gray-50 cursor-pointer h-[49px] text-gray-700"
-                onClick={() => router.push(`/articles/${article.id}`)}
+                onClick={() => router.push(`/board/${article.id}`)}
               >
                 <td className="border-b border-gray-200 px-4 py-2 text-center">
                   {article.id}
