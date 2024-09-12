@@ -10,6 +10,6 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClinet}>
       <Nav />
       <Component {...pageProps} />
-    </QueryClientProvider>
+      </QueryClientProvider>
   );
 }
