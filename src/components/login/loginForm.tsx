@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ErrorText } from '@/types/login/types';
 import { postLogin } from '@/apis/login/login';
 import { setToken } from '@/utils/token/token';
@@ -13,8 +13,9 @@ const LoginForm = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorText, setErrorText] = useState('');
-    const [loading, setLoading] = useState(false); // 로딩 상태 추가
+    const [emailError, setEmailError] = useState(''); 
+    const [passwordError, setPasswordError] = useState(''); 
+    const [loading, setLoading] = useState(false); 
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -24,92 +25,117 @@ const LoginForm = () => {
         setPassword(e.target.value);
     };
 
+    // 이메일 유효성 검사
+    const isValidEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    // 비밀번호 유효성 검사 (대소문자 요구 제거)
+    const isValidPassword = (password: string) => {
+        // 최소 8자 이상, 숫자 및 특수문자 포함
+        const passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+        return passwordRegex.test(password);
+    };
+
     const handleLoginSuccess = async () => {
-        setLoading(true); // 로그인 요청 시작
+        setLoading(true);
         try {
             const res = await postLogin({ email, password });
             const userData = res.data;
-            const userInfo = {
-                id: userData.id,
-                email: userData.email,
-                name: userData.name,
-                teamId: userData.teamId,
-                updatedAt: userData.updatedAt,
-                createdAt: userData.createdAt,
-                profile: {
-                    id: userData.profile.id,
-                    code: userData.profile.code,
-                }
-            };
-            console.log('userInfo', userInfo);
-            setToken(userData.accessToken);
-            setItem('refreshToken', userData.refreshToken);
 
-            // 메인 페이지로 리다이렉트
+            // 클라이언트에서만 로컬 스토리지에 접근
+            if (typeof window !== 'undefined') {
+                setToken(userData.accessToken); // 액세스 토큰 저장
+                setItem('refreshToken', userData.refreshToken); // 리프레시 토큰 저장
+            }
+
             router.push('/');
         } catch (err) {
             const error = err as AxiosError;
 
             if (error.response) {
-                // 서버 응답 에러 처리
                 const errorMessage = typeof error.response.data === 'string' 
                     ? error.response.data 
                     : '알 수 없는 오류가 발생했습니다.';
-                setErrorText(errorMessage);
+                setEmailError(errorMessage);
             } else if (error.request) {
-                // 네트워크 오류 (요청을 보냈으나 응답을 받지 못함)
-                setErrorText('네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
+                setEmailError('네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
             } else {
-                // 기타 오류
-                setErrorText('로그인 중 오류가 발생했습니다.');
+                setEmailError('로그인 중 오류가 발생했습니다.');
             }
         } finally {
-            setLoading(false); // 요청 완료 후 로딩 상태 해제
+            setLoading(false);
         }
     };
 
     const handleLogin = async () => {
+        let valid = true;
+        
+        // 이메일 유효성 검사
         if (!email) {
-            setErrorText(ErrorText.EmailRequired);
-        } else if (!password) {
-            setErrorText(ErrorText.PasswordRequired);
+            setEmailError(ErrorText.EmailRequired);
+            valid = false;
+        } else if (!isValidEmail(email)) {
+            setEmailError('유효한 이메일 주소를 입력해주세요.');
+            valid = false;
         } else {
-            setErrorText(''); // 이전 오류 메시지 초기화
-            await handleLoginSuccess(); // 로그인 시도
+            setEmailError(''); 
+        }
+
+        // 비밀번호 유효성 검사 (대소문자 요구 제거)
+        if (!password) {
+            setPasswordError(ErrorText.PasswordRequired);
+            valid = false;
+        } else if (!isValidPassword(password)) {
+            setPasswordError('비밀번호는 최소 8자 이상, 숫자 및 특수 문자를 포함해야 합니다.');
+            valid = false;
+        } else {
+            setPasswordError(''); 
+        }
+
+        if (valid) {
+            await handleLoginSuccess();
         }
     };
 
-    // const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    //     if (event.key === 'Enter') {
-    //         handleLogin();
-    //     }
-    // };
-
     return (
-        <div className="max-w-md mx-auto p-6">
-            <h2 className="text-2xl font-bold text-center mb-4">로그인</h2>
-            <AuthInput 
-                label="이메일" 
-                id="email" 
-                type="email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)}
-            />
-            <AuthInput 
-                label="비밀번호" 
-                id="password" 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <AuthButton 
-                label="로그인" 
-                type='submit'
-                onClick={handleLogin} 
-                loading={loading}
-            />
-            {errorText && <div className="mt-2 text-red-600 text-sm">{errorText}</div>}
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md p-6">
+                <h2 className="text-2xl font-bold text-center mb-4">로그인</h2>
+                <AuthInput 
+                    label="이메일" 
+                    id="email" 
+                    type="email" 
+                    value={email} 
+                    onChange={handleEmailChange}
+                    errorText={emailError}
+                />
+                <AuthInput 
+                    label="비밀번호" 
+                    id="password" 
+                    type="password" 
+                    value={password} 
+                    onChange={handlePasswordChange}
+                    errorText={passwordError}
+                />
+                <AuthButton 
+                    label="로그인" 
+                    type="submit"
+                    onClick={handleLogin}
+                    loading={loading}
+                />
+                <div className="mt-4 text-center">
+                    <button 
+                        onClick={() => router.push('/register')}
+                        className="text-sm text-blue-500 hover:underline"
+                    >
+                        회원가입
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
+
 export default LoginForm;
