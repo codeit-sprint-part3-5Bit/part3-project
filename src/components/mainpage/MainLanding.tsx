@@ -11,7 +11,8 @@ import Bell from "/public/assets/image/Lending_bell.png";
 import LetSee from "/public/assets/image/Lending_LetSee.png";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import axios from "axios";
+import axios from "@/lib/axios";
+import { BASE_URL } from "@/apis/base";
 
 interface Profile {
   id: number;
@@ -37,16 +38,11 @@ const MainLanding = () => {
 
     try {
       // API 호출을 통해 계정 설정 상태 확인
-      const res = await axios.get(
-        "https://wikied-api.vercel.app/8-2/users/me",
-        {
-          headers: {
-            Authorization: `Bearer ${accessTocken}`,
-          },
-        }
-      );
-
-      // 지금 리스트에서 3개의 프로필 code 를 가져오고 있어서 제대로 위키 페이지로 넘어가지 못하고 있음...
+      const res = await axios.get(`${BASE_URL}/users/me`, {
+        headers: {
+          Authorization: `Bearer ${accessTocken}`,
+        },
+      });
 
       const codes = res.data.profile;
 
@@ -124,13 +120,13 @@ const MainLanding = () => {
           </div>
           <div className="w-full h-[568px] left-0 top-[4547px] absolute bg-[#474d66]" />
           <div className="w-full h-[270px] left-0 top-[5115px] absolute bg-[#3b415b]" />
-          <Link href="#">
+          <button onClick={checkUserStatus}>
             <div className="px-[30px] py-[15px] left-[48rem] top-[4856px] absolute bg-white rounded-[15px] justify-center items-center gap-2.5 inline-flex">
               <div className="text-center text-[#474d66] text-2xl font-bold font-['NanumGothic']">
                 지금 시작하기
               </div>
             </div>
-          </Link>
+          </button>
           <div className="left-[37rem] top-[4747px] absolute text-center text-white text-6xl font-bold font-['Open Sans']">
             나만의 위키 만들어 보기
           </div>
