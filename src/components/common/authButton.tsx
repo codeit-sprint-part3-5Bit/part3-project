@@ -10,7 +10,7 @@ interface ButtonProps {
 
 const AuthButton: React.FC<ButtonProps> = ({ label, onClick, loading = false }) => {
     return (
-        <div className="flex justify-end mt-3">
+        <div className="flex justify-end mt-6">
             <Button 
                 onClick={onClick} 
                 className={`w-full py-1 bg-green-200 hover:bg-green-300 text-white font-semibold rounded-md transition duration-200 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-200 hover:bg-green-300'}`}
