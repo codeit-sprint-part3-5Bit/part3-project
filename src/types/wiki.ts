@@ -71,3 +71,8 @@ export interface UserInfo {
     code: string;
   };
 }
+
+export interface ProfileEditStatus {
+  registeredAt: string;
+  userId: number;
+}
