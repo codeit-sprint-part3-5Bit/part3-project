@@ -1,5 +1,6 @@
 import { useState, FormEvent, useEffect } from "react";
 import axios from "@/lib/axios";
+import { useRouter } from "next/router";
 
 type QuestionData = {
   securityQuestion: string;
@@ -17,6 +18,11 @@ export default function Home() {
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const router = useRouter();
+
+  const handelSet = () => {
+    router.push("/");
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -163,6 +169,7 @@ export default function Home() {
           </div>
           <div className="flex justify-end">
             <button
+              onClick={handelSet}
               className="mt-4 text-gray-100 bg-green-200 py-2 px-5 rounded-xl"
               type="submit"
             >

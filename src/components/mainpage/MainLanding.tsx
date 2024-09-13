@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Profile from "/public/assets/image/Lending_Profile.png";
 import HandOnKeybord from "/public/assets/image/Lending_HandOnKeybord.png";
 import Content from "/public/assets/image/Lending_Content.png";
