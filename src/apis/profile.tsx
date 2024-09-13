@@ -1,4 +1,4 @@
-import { Profile } from "@/types/wiki";
+import { Profile, UserInfo } from "@/types/wiki";
 import authAxiosInstance from "@/lib/axios";
 
 export const getProfileByCode = (code: string) => {
@@ -11,4 +11,9 @@ export const imageFileToUrl = (image: File) => {
   const formData = new FormData();
   formData.append("image", image);
   return authAxiosInstance.post<{ url: string }>("/images/upload", formData);
+};
+
+//현재 로그인된 사용자 정보 조회 api 호출, 사용자 정보 포함 UserInfo타입 반환
+export const getUserInfo = () => {
+  return authAxiosInstance.get<UserInfo>("/users/me");
 };
