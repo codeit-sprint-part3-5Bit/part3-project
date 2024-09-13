@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import OriginalProfile from "./OriginalProfile";
 import ExpandIcon from "../../../../public/assets/Icons/ExpandIcon.svg";
 import fileUploadIcon from "../../../../public/assets/Icons/CameraIcon.svg";
-import BasicProfileImg from "../../../../public/assets/Icons/ProfileIcon.svg";
+import BasicProfileImg from "/public/assets/Icons/ProfileIcon.svg";
 import { Button } from "flowbite-react";
 import { v4 as uuidv4 } from "uuid";
 import clsx from "clsx";

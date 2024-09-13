@@ -26,7 +26,7 @@ const WikiModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-1000 bg-modal-background flex flex-col justify-center items-center"
+      className="fixed inset-0 z-10 bg-modal-background flex flex-col justify-center items-center"
       onClick={handleOverlayClick}
     >
       <div className="relative bg-grayscale-50 rounded-lg shadow-lg p-5 w-[335px] md:w-[395px]">
