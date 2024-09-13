@@ -137,7 +137,7 @@ const LoginForm = () => {
         <div className="mt-4 text-center">
           <button
             onClick={() => router.push("/register")}
-            className="text-sm text-blue-500 hover:underline"
+            className="text-sm text-green-200 hover:underline"
           >
             회원가입
           </button>
