@@ -3,7 +3,7 @@ import { LoginUserProps } from "@/types/login/types";
 import { BASE_URL } from "../base";
 
 export const postLogin = async ({ email, password }: LoginUserProps) => {
-    return axios.post(`${BASE_URL}/auth/signIn`, {
+    return await axios.post(`${BASE_URL}/auth/signIn`, {
         email,
         password
     }, {
