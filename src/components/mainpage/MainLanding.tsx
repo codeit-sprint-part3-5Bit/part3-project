@@ -1,16 +1,66 @@
 import Link from "next/link";
-import Profile from "/public/assets/image/Lending_Profile.svg";
-import HandOnKeybord from "/public/assets/image/Lending_HandOnKeybord.svg";
-import Content from "/public/assets/image/Lending_Content.svg";
-import SpeechBubble from "/public/assets/image/Lendinf_SpeechBubble.svg";
-import ContentPage from "/public/assets/image/Lending_ContentPage.svg";
-import Roudspeaker from "/public/assets/image/Lending_Roudspeaker.svg";
-import GreenW from "/public/assets/image/Lending_Logo.svg";
-import Phone from "/public/assets/image/Lendinf_Phone.svg";
-import Bell from "/public/assets/image/Lending_bell.svg";
-import LetSee from "/public/assets/image/Lending_LetSee.svg";
+import Profile from "/public/assets/image/Lending_Profile.png";
+import HandOnKeybord from "/public/assets/image/Lending_HandOnKeybord.png";
+import Content from "/public/assets/image/Lending_Content.png";
+import SpeechBubble from "/public/assets/image/Lendinf_SpeechBubble.png";
+import ContentPage from "/public/assets/image/Lending_ContentPage.png";
+import Roudspeaker from "/public/assets/image/Lending_Roudspeaker.png";
+import GreenW from "/public/assets/image/Lending_Logo.png";
+import Phone from "/public/assets/image/Lendinf_Phone.png";
+import Bell from "/public/assets/image/Lending_bell.png";
+import LetSee from "/public/assets/image/Lending_LetSee.png";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import axios from "axios";
+
+interface Profile {
+  id: number;
+  code: string;
+  image: string | null;
+  city: string;
+  nationality: string;
+  job: string;
+  updatedAt: string;
+  name: string;
+}
 
 const MainLanding = () => {
+  const router = useRouter();
+
+  const checkUserStatus = async () => {
+    let accessTocken = localStorage.getItem("accessToken");
+
+    if (!accessTocken) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      // API 호출을 통해 계정 설정 상태 확인
+      const res = await axios.get(
+        "https://wikied-api.vercel.app/8-2/users/me",
+        {
+          headers: {
+            Authorization: `Bearer ${accessTocken}`,
+          },
+        }
+      );
+
+      // 지금 리스트에서 3개의 프로필 code 를 가져오고 있어서 제대로 위키 페이지로 넘어가지 못하고 있음...
+
+      const codes = res.data.profile;
+
+      if (!codes || codes.length === 0) {
+        router.push("/AccountSet");
+      } else {
+        router.push(`wiki/${codes.code}`);
+      }
+    } catch (error) {
+      console.error("데이터 가져오는데 에러", error);
+      router.push("/login");
+    }
+  };
+
   return (
     <>
       <div className="w-full h-full min-h-screen bg-[#f1f4fd] flex justify-center items-center">
@@ -23,14 +73,24 @@ const MainLanding = () => {
             />
           </div>
           <div className="w-full h-[1291px] left-0 top-[3256px] absolute bg-[#ecf0fa]" />
-          <Link href="#">
-            <div className="px-[30px] py-[15px] left-[50rem] top-[428px] absolute bg-[#474d66] rounded-[15px] justify-center items-center gap-2.5 inline-flex">
+          <button onClick={checkUserStatus}>
+            <div
+              className="px-[30px] py-[15px] absolute bg-[#474d66] rounded-[15px] justify-center items-center gap-2.5 inline-flex"
+              style={{
+                left: "50%",
+                transform: "translateX(-50%)",
+                top: "428px",
+              }}
+            >
               <div className="text-center text-white text-2xl font-bold font-['NanumGothic']">
                 위키 만들기
               </div>
             </div>
-          </Link>
-          <div className="left-[42rem] top-[200px] absolute flex-col justify-start items-center gap-[15px] inline-flex">
+          </button>
+          <div
+            className="absolute flex-col justify-start items-center gap-[15px] inline-flex"
+            style={{ left: "50%", transform: "translateX(-50%)", top: "200px" }}
+          >
             <div className="text-center text-[#474d66] text-6xl font-light font-['Open Sans']">
               남들이 만드는
             </div>
@@ -95,52 +155,75 @@ const MainLanding = () => {
             </div>
           </div>
           <div className="left-[-295px] top-[2696px] absolute justify-start items-start gap-[70px] inline-flex">
-            <div className="w-[20rem] h-[20rem] relative bg-[#dee5f5] rounded-[25px]" />
-            <div className="w-[20rem] h-[20rem] bg-[#b2a5fd] rounded-[25px] justify-center items-center flex">
+            <div className="w-[360px] h-[360px] relative bg-[#dee5f5] rounded-[25px]" />
+            <div className="w-[360px] h-[360px] bg-[#b2a5fd] rounded-[25px] justify-center items-center flex">
               <div className="grow shrink basis-0 self-stretch justify-center items-center inline-flex">
-                <Roudspeaker className="w-[20rem] h-[20rem]" />
+                <Image
+                  alt="스피커"
+                  src={Roudspeaker}
+                  width={360}
+                  height={360}
+                />
               </div>
             </div>
-            <div className="w-[20rem] h-[20rem] bg-[#acecdd] rounded-[25px] justify-center items-center flex">
+            <div className="w-[360px] h-[360px] bg-[#acecdd] rounded-[25px] justify-center items-center flex">
               <div className="grow shrink basis-0 self-stretch justify-center items-center inline-flex">
-                <GreenW className="w-[20rem] h-[20rem]" />
+                <Image alt="로고" src={GreenW} width={360} height={360} />
               </div>
             </div>
-            <div className="w-[20rem] h-[20rem] bg-[#dee5f5] rounded-[25px] justify-center items-center flex">
+            <div className="w-[360px] h-[360px] bg-[#dee5f5] rounded-[25px] justify-center items-center flex">
               <div className="grow shrink basis-0 self-stretch justify-center items-center inline-flex">
-                <Phone className="w-[20rem] h-[20rem]" />
+                <Image alt="폰" src={Phone} width={360} height={360} />
               </div>
             </div>
-            <div className="w-[20rem] h-[20rem] bg-[#dee5f5] rounded-[25px] justify-center items-center flex">
+            <div className="w-[360px] h-[360px] bg-[#dee5f5] rounded-[25px] justify-center items-center flex">
               <div className="grow shrink basis-0 self-stretch justify-center items-center inline-flex">
-                <SpeechBubble className="w-[20rem] h-[20rem]" />
+                <Image
+                  alt="말풍선들"
+                  src={SpeechBubble}
+                  width={360}
+                  height={360}
+                />
               </div>
             </div>
-            <div className="w-[20rem] h-[20rem] relative bg-[#dee5f5] rounded-[25px]" />
+            <div className="w-[360px] h-[360px] relative bg-[#dee5f5] rounded-[25px]" />
           </div>
           <div className="w-[604px] h-[280px] left-[45rem] top-[4067px] absolute justify-center items-center inline-flex">
-            <LetSee className="w-[604px] h-[280px]" />
+            <Image alt="Letsee" src={LetSee} width={604} height={280} />
           </div>
           <div className="w-[924px] h-[280px] left-[25rem] top-[3747px] absolute justify-center items-center inline-flex">
-            <Content className="w-[924px] h-[280px]" />
+            <Image alt="Content" src={Content} width={924} height={280} />
           </div>
           <div className="w-[280px] h-[280px] left-[25rem] top-[4067px] absolute">
             <div className="w-[280px] h-[280px] left-0 top-0 absolute bg-[#8d65ff] rounded-[20px]" />
             <div className="w-[280px] h-[280px] left-0 top-0 absolute justify-center items-center inline-flex">
-              <Bell className="w-[280px] h-[280px]" />
+              <Image alt="벨" src={Bell} width={280} height={280} />
             </div>
           </div>
           <div className="w-[520px] h-[681px] left-[50rem] top-[1324px] absolute flex-col justify-center items-center inline-flex">
-            <ContentPage className="w-[520px] h-[681px]" />
+            <Image
+              alt="contentpage"
+              src={ContentPage}
+              width={520}
+              height={681}
+            />
           </div>
           <div className="w-[364px] h-[450px] left-[25rem] top-[1555px] absolute">
             <div className="w-[364px] h-[450px] left-0 top-0 absolute bg-[#4cbfa3] rounded-[20px]" />
             <div className="w-[310px] h-[450px] left-0 top-0 absolute flex-col justify-center items-center inline-flex">
-              <HandOnKeybord className="w-[310px] h-[450px]" />
+              <Image
+                alt="키보드"
+                src={HandOnKeybord}
+                width={310}
+                height={450}
+              />
             </div>
           </div>
-          <div className="w-[22rem] h-[590px] left-[711px] top-[541px] absolute flex-col justify-center items-center inline-flex">
-            <Profile className="w-[498px] h-[590px]" />
+          <div
+            className="w-[22rem] h-[590px] absolute flex-col justify-center items-center inline-flex"
+            style={{ left: "50%", transform: "translateX(-50%)", top: "541px" }}
+          >
+            <Image alt="프로필" src={Profile} width={498} height={590} />
           </div>
         </div>
       </div>

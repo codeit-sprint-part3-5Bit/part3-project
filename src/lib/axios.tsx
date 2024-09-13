@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const BASE_URL = "https://wikied-api.vercel.app/8-2";
+import { BASE_URL } from "@/apis/base";
 
 const authAxiosInstance = axios.create({
   baseURL: BASE_URL,
