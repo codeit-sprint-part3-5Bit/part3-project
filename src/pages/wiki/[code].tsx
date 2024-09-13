@@ -88,7 +88,7 @@ export default function WikiPage() {
           <article className="mt-[5.6rem] w-[52rem]">
             <div className="flex justify-between ">
               <h1 className="text-5xl text-grayscale-500 font-semibold mb-8">
-                {userData?.nickname || "사용자 이름"}
+                {userData?.name || "사용자 이름"}
               </h1>
               <div className="flex justify-end">
                 {userData?.content && (

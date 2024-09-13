@@ -5,15 +5,11 @@ import Profile from "/public/assets/Icons/ProfileIcon.svg";
 import { useEffect, useState } from "react";
 import { Dropdown } from "flowbite-react";
 import { useRouter } from "next/router";
+import { useAuth } from "@/components/context/AuthContext";
 
 const Nav = () => {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const { accessToken, setAccessToken } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    setAccessToken(token);
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -22,7 +18,7 @@ const Nav = () => {
   };
 
   const handleMyWiki = () => {
-    router.push("/");
+    router.push("/AccountSet");
   };
 
   return (

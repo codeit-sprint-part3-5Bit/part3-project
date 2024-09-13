@@ -80,7 +80,7 @@ export default function Home() {
       });
 
       if (response.status === 201) {
-        alert(response.data.message);
+        alert("위키 설정 완료");
 
         setSecurityQuestion("");
         setSecurityAnswer("");
