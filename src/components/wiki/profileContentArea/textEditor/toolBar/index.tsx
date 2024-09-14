@@ -1,5 +1,5 @@
 import BoldIcon from "/public/assets/Icons/BoldIcon.svg";
-import ItalicIcon from "/public/assets/Icons/italicIcon.svg";
+import ItalicIcon from "/public/assets/Icons/ItalicIcon.svg";
 import UnderlineIcon from "/public/assets/Icons/UnderlineIcon.svg";
 import AlignLeft from "/public/assets/Icons/Alignment_left.svg";
 import AlignCenter from "/public/assets/Icons/AlignIcon_center.svg";
