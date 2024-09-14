@@ -29,6 +29,11 @@ export interface Profile {
   id: number;
 }
 
+export interface ProfileDetail extends Profile {
+  isMyProfile?: boolean;
+  securityAnswer?: string;
+}
+
 export interface updatedProfileData {
   securityAnswer?: string;
   securityQuestion?: string;
@@ -65,4 +70,9 @@ export interface UserInfo {
     id: number;
     code: string;
   };
+}
+
+export interface ProfileEditStatus {
+  registeredAt: string;
+  userId: number;
 }

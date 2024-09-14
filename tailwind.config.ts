@@ -29,6 +29,17 @@ const config: Config = {
           100: "#FBEDED",
           200: "#D14343",
         },
+        spacing: {
+          "62px": "62px",
+          "71px": "71px",
+          "200px": "200px",
+        },
+        borderRadius: {
+          lg: "0.5rem",
+        },
+        boxShadow: {
+          lg: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        },
         purple: "#8E66FF",
         yellow: "#FDD181",
       },
