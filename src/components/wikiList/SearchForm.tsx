@@ -47,7 +47,7 @@ const SearchForm = ({
             />
             <label
               htmlFor="name"
-              className="absolute left-4 top-[6.4rem] transform -translate-y-1/2 text-gray-400"
+              className="absolute left-4 top-[3.9rem] transform -translate-y-1/2 text-gray-400"
             >
               <SearchIcon />
             </label>
