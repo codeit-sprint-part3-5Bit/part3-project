@@ -42,7 +42,7 @@ const SearchForm = ({
               value={value}
               placeholder="위키 검색하기"
               onChange={handleChange}
-              className="w-[55rem] h-11 outline-none bg-grayscale-100 px-11 py-2.5 rounded-lg mt-20 placeholder-grayscale-400"
+              className="w-[55rem] h-11 outline-none bg-grayscale-100 px-11 py-2.5 rounded-lg mt-10 placeholder-grayscale-400"
               autoComplete="off"
             />
             <label
