@@ -1,11 +1,10 @@
 import Link from "next/link";
 import Logo from "/public/assets/image/Lendinf_GreenW.svg";
-import AlarmIcon from "/public/assets/Icons/AlarmIcon_small.svg";
 import Profile from "/public/assets/Icons/ProfileIcon.svg";
-import { useEffect, useState } from "react";
 import { Dropdown } from "flowbite-react";
 import { useRouter } from "next/router";
 import { useAuth } from "@/components/context/AuthContext";
+import AlarmMenu from "./AlarmMenu";
 
 const Nav = () => {
   const { accessToken, setAccessToken } = useAuth();
@@ -35,7 +34,7 @@ const Nav = () => {
         {accessToken ? (
           <>
             <div className="cursor-pointer">
-              <AlarmIcon />
+              <AlarmMenu />
             </div>
             <Dropdown
               label=""
