@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, useEffect } from "react";
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -121,6 +121,7 @@ interface ImageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onInsertImage: (url: string) => void;
+  teamId: string;
 }
 
 const ImageModal: React.FC<ImageModalProps> = ({
@@ -212,13 +213,18 @@ interface CharacterCountState {
   charactersWithoutSpaces: number;
 }
 
-const ContentWriter: React.FC = () => {
+interface ContentWriterProps {
+  onContentChange: (data: { title: string; content: string }) => void;
+}
+
+const ContentWriter: React.FC<ContentWriterProps> = ({ onContentChange }) => {
   const [title, setTitle] = useState<string>("");
   const [characterCount, setCharacterCount] = useState<CharacterCountState>({
     characters: 0,
     charactersWithoutSpaces: 0,
   });
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [teamId, setTeamId] = useState("8-2");
 
   const editor = useEditor({
     extensions: [
@@ -235,6 +241,9 @@ const ContentWriter: React.FC = () => {
     ],
     content: "",
     onUpdate: ({ editor }) => {
+      const content = editor.getHTML();
+      onContentChange({ title, content });
+
       const textContent = editor.getText();
       const characters = textContent.length;
       const charactersWithoutSpaces = textContent.replace(/\s+/g, "").length;
@@ -245,6 +254,10 @@ const ContentWriter: React.FC = () => {
       });
     },
   });
+
+  useEffect(() => {
+    onContentChange({ title, content: editor?.getHTML() || "" });
+  }, [title, editor?.getHTML()]);
 
   const handleImageInsert = (url: string) => {
     editor?.chain().focus().setImage({ src: url }).run();
@@ -265,9 +278,14 @@ const ContentWriter: React.FC = () => {
     <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-700">게시물 등록하기</h1>
-        <button className="bg-green-200 text-white px-9 py-2 rounded-lg hover:bg-green-300 transition-colors">
+        {/* <button
+          onClick={() =>
+            onContentChange({ title, content: editor?.getHTML() || "" })
+          }
+          className="bg-green-200 text-white px-9 py-2 rounded-lg hover:bg-green-300 transition-colors"
+        >
           등록하기
-        </button>
+        </button> */}
       </div>
 
       <p className="text-gray-500 mb-6">등록일 {formatDate(new Date())}</p>
@@ -309,6 +327,7 @@ const ContentWriter: React.FC = () => {
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
         onInsertImage={handleImageInsert}
+        teamId={"8-2"}
       />
     </div>
   );
