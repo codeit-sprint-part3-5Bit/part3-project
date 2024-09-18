@@ -162,7 +162,7 @@ const SideProfile = ({
               ) : (
                 <img
                   src={preview}
-                  className="w-[200px] h-[200px] rounded-full"
+                  className="w-[200px] h-[200px] rounded-full mx-auto"
                   alt="첨부파일 미리보기"
                 />
               )}
