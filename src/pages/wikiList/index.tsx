@@ -28,6 +28,7 @@ const WikiList = () => {
       { name: name as string, page: Number(page), pageSize: Number(pageSize) },
     ],
     queryFn: fetchProfiles,
+    placeholderData: { list: [], totalCout: 0 },
   });
 
   const handlePageChange = (newPage: number) => {
@@ -52,7 +53,7 @@ const WikiList = () => {
   return (
     <>
       <div className="flex flex-col justify-center items-center">
-        <SearchForm />
+        <SearchForm data={data} isLoading={isLoading} isError={isError} />
         <ProfileList wikiItemList={data?.list || []} />
         <Pagination
           currentPage={Number(page)}

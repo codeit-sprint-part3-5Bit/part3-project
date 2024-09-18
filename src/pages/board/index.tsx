@@ -196,8 +196,9 @@ const Home: React.FC = () => {
 
   const fetchArticles = useCallback(async () => {
     try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_KEY;
       const response = await axios.get<ArticleResponse>(
-        `https://wikied-api.vercel.app/7-7/articles?pageSize=1000&orderBy=${orderBy}`
+        `${apiUrl}/articles?pageSize=1000&orderBy=${orderBy}`
       );
       const data = response.data;
       if (data && Array.isArray(data.list)) {
@@ -227,8 +228,9 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchBestArticles = async () => {
       try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_KEY;
         const response = await axios.get<ArticleResponse>(
-          `https://wikied-api.vercel.app/7-7/articles?orderBy=like&page=1&pageSize=4`
+          `${apiUrl}/articles?orderBy=like&page=1&pageSize=4`
         );
         const data = response.data;
         if (data && Array.isArray(data.list)) {
@@ -278,8 +280,10 @@ const Home: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 w-[1080px] mt-10 mb-24">
-      <div className="flex justify-between items-start mb-3">
-        <h1 className="text-2xl font-bold text-gray-700 mb-8">베스트 게시글</h1>
+      <div className="flex justify-between items-start mb-9">
+        <h1 className="text-2xl font-bold text-gray-700 flex justify-center justify-items-center">
+          베스트 게시글
+        </h1>
         <button
           onClick={() => router.push("/articles/create")}
           className="bg-green-200 hover:bg-green-300 text-white py-2 px-4 rounded-md w-[160px] h-[45px]"
@@ -287,16 +291,16 @@ const Home: React.FC = () => {
           게시물 등록하기
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         {bestArticles.length > 0 ? (
           bestArticles.map((article) => (
             <div
               key={article.id}
               className="bg-white shadow-md rounded-md overflow-hidden cursor-pointer"
-              onClick={() => router.push(`/articles/${article.id}`)}
+              onClick={() => router.push(`/board/${article.id}`)}
             >
               <img
-                src={article.image}
+                src={article.image} // 이미지가 없을 경우 임시 이미지로 대체
                 alt={article.title}
                 className="w-full h-32 object-cover"
               />
@@ -347,7 +351,7 @@ const Home: React.FC = () => {
               <tr
                 key={article.id}
                 className="hover:bg-gray-50 cursor-pointer h-[49px] text-gray-700"
-                onClick={() => router.push(`/articles/${article.id}`)}
+                onClick={() => router.push(`/board/${article.id}`)}
               >
                 <td className="border-b border-gray-200 px-4 py-2 text-center">
                   {article.id}

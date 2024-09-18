@@ -1,19 +1,39 @@
 import Link from "next/link";
 import Logo from "/public/assets/image/Lendinf_GreenW.svg";
-import AlarmIcon from "/public/assets/Icons/AlarmIcon_small.svg";
 import Profile from "/public/assets/Icons/ProfileIcon.svg";
-import { useEffect, useState } from "react";
 import { Dropdown } from "flowbite-react";
 import { useRouter } from "next/router";
+import { useAuth } from "@/components/context/AuthContext";
+import AlarmMenu from "./AlarmMenu";
+import { useCallback, useEffect, useState } from "react";
+import { getProfileByCode, getUserInfo } from "@/apis/profile";
 
 const Nav = () => {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [code, setCode] = useState<string | null>(null);
+  const { accessToken, setAccessToken } = useAuth();
   const router = useRouter();
 
+  const fetchProfileData = useCallback(async () => {
+    try {
+      if (!accessToken) return; // accessToken이 없으면 아무 작업도 하지 않음
+      // 1단계: 사용자 정보 가져오기
+      const userInfoResponse = await getUserInfo();
+      const code = userInfoResponse.data.profile.code;
+      setCode(code);
+
+      // 2단계: 프로필 이미지 가져오기
+      const profileResponse = await getProfileByCode(code);
+      const image = profileResponse.data.image;
+      setProfileImage(image);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [accessToken]);
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    setAccessToken(token);
-  }, []);
+    fetchProfileData();
+  }, [fetchProfileData]);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -22,7 +42,7 @@ const Nav = () => {
   };
 
   const handleMyWiki = () => {
-    router.push("/");
+    router.push("/AccountSet");
   };
 
   return (
@@ -39,14 +59,22 @@ const Nav = () => {
         {accessToken ? (
           <>
             <div className="cursor-pointer">
-              <AlarmIcon />
+              <AlarmMenu />
             </div>
             <Dropdown
               label=""
               dismissOnClick={false}
               renderTrigger={() => (
                 <div className="cursor-pointer">
-                  <Profile />
+                  {profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <Profile />
+                  )}
                 </div>
               )}
             >

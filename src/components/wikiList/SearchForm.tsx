@@ -1,24 +1,19 @@
-import axios from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useState } from "react";
 import SearchIcon from "../../../public/assets/Icons/searchicon.svg";
 
-const fetchData = async (searchValue: string) => {
-  if (!searchValue) return { totalCount: 0 };
-  const res = await axios.get(`/profiles?name=${searchValue}`);
-  return res.data;
-};
-
-const SearchForm = () => {
+const SearchForm = ({
+  data,
+  isLoading,
+  isError,
+}: {
+  data: { totalCount: number };
+  isLoading: boolean;
+  isError: boolean;
+}) => {
   const router = useRouter();
   const [value, setValue] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
-
-  const { data, isError, isLoading } = useQuery({
-    queryKey: ["profiles", searchValue],
-    queryFn: () => fetchData(searchValue),
-  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -27,8 +22,7 @@ const SearchForm = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     router.push(`/wikiList?name=${value}&page=1&pageSize=3`);
-    setSearchValue(`${value}`);
-    fetchData(value);
+    setSearchValue(value);
 
     if (!value) {
       router.push("/wikiList");
@@ -48,12 +42,12 @@ const SearchForm = () => {
               value={value}
               placeholder="위키 검색하기"
               onChange={handleChange}
-              className="w-[55rem] h-11 outline-none bg-grayscale-100 px-11 py-2.5 rounded-lg mt-20 placeholder-grayscale-400"
+              className="w-[55rem] h-11 outline-none bg-grayscale-100 px-11 py-2.5 rounded-lg mt-10 placeholder-grayscale-400"
               autoComplete="off"
             />
             <label
               htmlFor="name"
-              className="absolute left-4 top-[6.4rem] transform -translate-y-1/2 text-gray-400"
+              className="absolute left-4 top-[3.9rem] transform -translate-y-1/2 text-gray-400"
             >
               <SearchIcon />
             </label>
