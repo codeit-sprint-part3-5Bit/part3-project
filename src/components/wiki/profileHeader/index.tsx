@@ -82,16 +82,18 @@ const ProfileHeader = ({
       {isEditable ? (
         <div className="bg-gray-100 grid grid-cols-[82px_minmax(0,_178px)_minmax(537px,_auto)] overflow-hidden rounded-lg"></div>
       ) : (
-        <section className={`flex flex-col items-start gap-8 ${className}`}>
-          <section className="flex items-center justify-between w-full gap-8">
-            <span className="text-5xl font-semibold text-gray-800 whitespace-nowrap">
+        <section
+          className={`flex flex-col items-start justify-start gap-8 ${className}`}
+        >
+          <section className="flex flex-row justify-between items-start w-full">
+            <span className="relative text-5xl left-[30px]">
               {profile.name}
             </span>
             {profile.content &&
               (showParticipateBtn ? (
                 <>
                   <Button
-                    className="w-40 relative whitespace-nowrap bg-green-200"
+                    className="w-[160px] h-auto bg-green-400"
                     size="md"
                     onClick={() => {
                       checkParticipationStatus();
@@ -104,25 +106,26 @@ const ProfileHeader = ({
               ) : (
                 <>
                   <Button
-                    className="pointer-events-none w-40 bg-gray-400 text-white"
-                    size="md"
+                    className="pointer-events-none w-[160px] h-auto bg-green-200"
                     onClick={onParticipateClick}
                   >
-                    편집 쿨타임
+                    편집 쿨타임...
                   </Button>
                 </>
               ))}
           </section>
-          <section className="flex items-center max-w-[860px] rounded-lg bg-green-100 p-2 px-3 gap-2">
-            <Link width={20} height={20} alt="링크 아이콘" />
-            <button
-              onClick={handleCopyClick}
-              className="flex items-center overflow-hidden text-sm text-green-200 bg-transparent border-none cursor-pointer flex-grow"
-            >
-              <section className="text-sm text-green-200 truncate">
-                https://www.wikied.kr/{profile.code}
-              </section>
-            </button>
+          <section className="w-auto h-[34px] max-w-[860px] flex rounded-lg p-1.5 gap-2 bg-green-100">
+            <section className="flex items-center gap-1.5 overflow-hidden">
+              <Link width={20} height={20} alt="링크 아이콘" />
+              <button
+                onClick={handleCopyClick}
+                className="overflow-hidden text-ellipsis bg-transparent flex-start no-underline"
+              >
+                <section className="text-sm leading-6 font-normal text-green-600 inline">
+                  https://www.wikied.kr/{profile.code}
+                </section>
+              </button>
+            </section>
           </section>
         </section>
       )}

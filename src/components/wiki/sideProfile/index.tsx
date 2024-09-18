@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import OriginalProfile from "./OriginalProfile";
 import ExpandIcon from "../../../../public/assets/Icons/ExpandIcon.svg";
-import fileUploadIcon from "../../../../public/assets/Icons/CameraIcon.svg";
-import BasicProfileImg from "/public/assets/Icons/ProfileIcon.svg";
+import FileUploadIcon from "../../../../public/assets/Icons/CameraIcon.svg";
+import BasicProfileImg from "/public/assets/Icons/BigProfileIcon.svg";
 import { Button } from "flowbite-react";
 import { v4 as uuidv4 } from "uuid";
 import clsx from "clsx";
@@ -121,148 +121,177 @@ const SideProfile = ({
     <>
       <div
         className={clsx(
-          "relative overflow-hidden max-h-[650px] shadow-lg rounded-lg p-4",
-          className,
-          {
-            "bg-gray-100": isEditable,
-            "bg-white": !isEditable,
-          },
-          "max-w-sm mx-auto md:mx-0"
+          "flex flex-col items-start justify-start w-full max-w-[671px] rounded-lg bg-gray-50 shadow-lg overflow-hidden",
+          "h-[700px]",
+          className
         )}
       >
-        <div className="flex items-center justify-center mb-4">
-          <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-200 md:w-40 md:h-40">
-            {profile.image ? (
-              <img
-                src={profile.image}
-                className="object-cover w-full h-full"
-                alt="프로필 이미지"
+        <div className="my-[60px] mx-0">
+          {isEditable && isCurrentUser ? (
+            <div className="relative" onClick={handleDivClick}>
+              <input
+                type="file"
+                className="flex flex-col items-center justify-center w-[200px] h-[200px] rounded-full"
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+                ref={inputRef}
+                accept="image/*"
               />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full">
-                <BasicProfileImg className="object-cover" />
-              </div>
-            )}
-            {isEditable && isCurrentUser && (
-              <div
-                className="absolute inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 cursor-pointer"
-                onClick={handleDivClick}
-              >
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                  ref={inputRef}
-                  accept="image/*"
-                />
+              {!preview ? (
+                <>
+                  <FileUploadIcon
+                    className="w-9 h-9 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
+                    alt="파일 업로드 아이콘"
+                  />
+                  {profile.image || !isEditable ? (
+                    <>
+                      <div className="w-52 h-52 absolute left-15 bg-gray-700 opacity-50 rounded-full z-10 ml-14"></div>
+                      <img
+                        src={profile.image || ""}
+                        className="flex flex-col items-center justify-center w-[200px] h-[200px] rounded-full mx-[60px] box-border"
+                        alt="프로필 이미지"
+                      />
+                    </>
+                  ) : (
+                    <BasicProfileImg
+                      className="flex flex-col items-center justify-center w-[200px] h-[200px] rounded-full mx-auto box-border"
+                      alt="기본 프로필 이미지"
+                    />
+                  )}
+                </>
+              ) : (
                 <img
-                  src={fileUploadIcon.src}
-                  className="w-8 h-8"
-                  alt="파일 업로드 아이콘"
+                  src={preview}
+                  className="w-[200px] h-[200px] rounded-full mx-auto"
+                  alt="첨부파일 미리보기"
                 />
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          ) : profile.image ? (
+            <img
+              key={profile.image}
+              src={profile.image}
+              className="flex flex-col items-center justify-center w-[200px] h-[200px] rounded-full mx-[60px] box-border"
+              alt="프로필 이미지"
+            />
+          ) : (
+            <BasicProfileImg
+              className="flex flex-col items-center justify-center w-[200px] h-[200px] rounded-full mx-auto box-border"
+              alt="기본 프로필 이미지"
+            />
+          )}
         </div>
 
-        <div className="space-y-4 mt-12">
+        <div className="px-10">
           {isEditable ? (
-            attributes.map((attr, index) => (
-              <OriginalProfile
-                key={index}
-                attributeName={attr.name}
-                name={attr.key}
-                value={attr.value || "-"}
-                isEditable={isEditable}
-                isCurrentUser={isCurrentUser}
-                onChange={(name, value) => handleInputChange(name, value)}
-              />
-            ))
-          ) : (
-            <div>
-              <div className="space-y-4">
-                {attributes.slice(0, 3).map((attr, index) => (
-                  <div
+            <>
+              <div className="flex flex-col gap-4 text-base leading-6 font-normal mb-10">
+                {attributes.map((attr, index) => (
+                  <OriginalProfile
                     key={index}
-                    className="flex items-center space-x-4 ml-12"
-                  >
-                    <span className="text-gray-400 text-md font-medium w-1/3 ">
-                      {attr.name}
-                    </span>
-                    <span className="text-gray-600 text-md w-2/3">
-                      {attr.value || "-"}
-                    </span>
-                  </div>
+                    attributeName={attr.name}
+                    name={attr.key}
+                    value={attr.value}
+                    isEditable={isEditable}
+                    isCurrentUser={isCurrentUser}
+                    onChange={(name, value) => handleInputChange(name, value)}
+                  />
                 ))}
               </div>
-              <div className="hidden md:block space-y-4 mt-4">
-                {attributes.slice(3, 8).map((attr, index) => (
-                  <div
+            </>
+          ) : (
+            <div className="flex flex-col gap-4 top-[320px] left-[30px] text-base font-normal">
+              <div className="md:flex md:flex-col md:gap-4">
+                {attributes.slice(0, 3).map((attr, index) => (
+                  <OriginalProfile
                     key={index}
-                    className="flex items-center space-x-4 ml-12"
-                  >
-                    <span className="text-gray-400 text-md font-medium w-1/3">
-                      {attr.name}
-                    </span>
-                    <span className="text-gray-600 text-md w-2/3">
-                      {attr.value || "-"}
-                    </span>
-                  </div>
+                    name={attr.key}
+                    attributeName={attr.name}
+                    value={attr.value}
+                    isEditable={isEditable}
+                  />
+                ))}
+              </div>
+              <div className="hidden md:flex md:flex-col md:gap-4 mb-10">
+                {attributes.slice(3, 8).map((attr, index) => (
+                  <OriginalProfile
+                    key={index}
+                    name={attr.key}
+                    attributeName={attr.name}
+                    value={attr.value}
+                    isEditable={isEditable}
+                  />
                 ))}
               </div>
               {isExpanded && (
-                <div className="block md:hidden space-y-2 mt-4 ml-12">
+                <div className="gap-2 sm:flex sm:flex-col sm:gap-1 md:hidden">
                   {attributes.slice(3, 8).map((attr, index) => (
-                    <div key={index} className="flex items-center space-x-4">
-                      <span className="text-gray-400 text-md font-medium w-1/3">
-                        {attr.name}
-                      </span>
-                      <span className="text-gray-600 text-md w-2/3">
-                        {attr.value || "-"}
-                      </span>
-                    </div>
+                    <OriginalProfile
+                      key={index}
+                      name={attr.key}
+                      attributeName={attr.name}
+                      value={attr.value}
+                      isEditable={isEditable}
+                    />
                   ))}
                 </div>
               )}
             </div>
           )}
         </div>
-
         {!isEditable && (
           <button
             className={clsx(
-              "absolute bottom-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300",
-              "block md:hidden",
-              { "rotate-180": isExpanded }
+              "flex flex-col items-center justify-center col-start-3 row-start-3 bg-gray-50 border-none cursor-pointer p-2.5",
+              "block md:hidden" // md 이하에서 block, md 이상에서 hidden
             )}
             onClick={handleToggle}
           >
-            <ExpandIcon className="w-6 h-6" alt="더보기 아이콘" />
+            <ExpandIcon className="rotate-180" alt="더보기 아이콘" />
           </button>
         )}
-
-        {isEditable && (
-          <div className="flex justify-between mt-4">
-            <span className="text-lg font-medium">{profile.name}</span>
-            <div className="flex gap-2">
-              <Button
-                className="bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-400"
-                size="sm"
-                onClick={onCancel}
-              >
-                취소
-              </Button>
-              <Button
-                className="bg-green-400 text-white hover:bg-blue-600"
-                size="sm"
-                onClick={onSave}
-              >
-                저장
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
+      {isEditable && (
+        <div
+          className={clsx(
+            "top-[15px] left-[17px] right-[17px] p-1.5 px-4", // sm 미만
+            "sm:absolute sm:top-[47px] sm:left-[57px] sm:right-[57px] sm:bg-gray-100 sm:rounded-lg sm:p-1.5 sm:mb-2 sm:flex sm:justify-between sm:items-center", // sm 이상 md 미만
+            "md:flex md:flex-row md:gap-2.5 md:absolute md:top-[750px] md:right-[270px] md:left-[1300px]" // md 이상
+          )}
+        >
+          <span
+            className={clsx(
+              "text-xl leading-xl font-medium text-gray-500",
+              "sm:block sm:mr-auto",
+              "md:hidden"
+            )}
+          >
+            {profile.name}
+          </span>
+          <div className="flex gap-1 justify-end">
+            <Button
+              className={clsx(
+                "w-[56px] text-xs bg-transparent",
+                "sm:w-[65px] sm:ml-2 bg-transparent",
+                "md:w-[65px] bg-gray-400"
+              )}
+              onClick={onCancel}
+            >
+              취소
+            </Button>
+            <Button
+              className={clsx(
+                "w-[56px] text-xs",
+                "sm:w-[65px] sm:ml-2",
+                "md:w-[65px]"
+              )}
+              onClick={onSave}
+            >
+              저장
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

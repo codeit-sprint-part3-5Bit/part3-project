@@ -42,12 +42,12 @@ const SearchForm = ({
               value={value}
               placeholder="위키 검색하기"
               onChange={handleChange}
-              className="w-[55rem] h-11 outline-none bg-grayscale-100 px-11 py-2.5 rounded-lg mt-20 placeholder-grayscale-400"
+              className="w-[55rem] h-11 outline-none bg-grayscale-100 px-11 py-2.5 rounded-lg mt-10 placeholder-grayscale-400"
               autoComplete="off"
             />
             <label
               htmlFor="name"
-              className="absolute left-4 top-[6.4rem] transform -translate-y-1/2 text-gray-400"
+              className="absolute left-4 top-[3.9rem] transform -translate-y-1/2 text-gray-400"
             >
               <SearchIcon />
             </label>

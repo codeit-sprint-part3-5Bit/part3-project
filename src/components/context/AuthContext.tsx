@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import { UserInfo } from "@/types/notificationType";
 
 interface AuthContextType {
+  user?: UserInfo | undefined;
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
 }
