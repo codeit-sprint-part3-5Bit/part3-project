@@ -122,7 +122,7 @@ const SideProfile = ({
       <div
         className={clsx(
           "flex flex-col items-start justify-start w-full max-w-[671px] rounded-lg bg-gray-50 shadow-lg overflow-hidden",
-          "h-[700px]",
+          "h-[850px]",
           className
         )}
       >
@@ -256,7 +256,7 @@ const SideProfile = ({
           className={clsx(
             "top-[15px] left-[17px] right-[17px] p-1.5 px-4", // sm 미만
             "sm:absolute sm:top-[47px] sm:left-[57px] sm:right-[57px] sm:bg-gray-100 sm:rounded-lg sm:p-1.5 sm:mb-2 sm:flex sm:justify-between sm:items-center", // sm 이상 md 미만
-            "md:flex md:flex-row md:gap-2.5 md:absolute md:top-[750px] md:right-[270px] md:left-[1300px]" // md 이상
+            "md:flex md:flex-row md:gap-2.5 md:absolute md:top-[850px] md:right-[270px] md:left-[1300px]" // md 이상
           )}
         >
           <span
